@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Mountain Unicyclist</string>
+
+
+    <string name="title_section1">Locations</string>
+    <string name="title_section2">Rides</string>
+    <string name="title_section3">People</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_location">Trail</string>
+    <string name="title_activity_location_picker">Location Picker</string>
+    <string name="featured_image">Featured Image</string>
+    <string name="background_image">background image</string>
+    <string name="location_name">Location Name</string>
+    <string name="description">Description</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="trail_head">Trail Head</string>
+    <string name="trails">Trails</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="features">Features</string>
+    <string name="rides">Rides</string>
+    <string name="difficulty">Difficulty</string>
+    <string name="rating">Small Text</string>
+    <string name="trail_name">Trail Name</string>
+    <string name="trailsystem">Small Text</string>
+    <string name="title_activity_trail">TrailActivity</string>
+    <string name="photos">Photos</string>
+    <string name="comments">Comments</string>
+    <string name="edit">Edit</string>
+    <string name="ride_now">Ride Now!</string>
+    <string name="add_comment">Add Comment</string>
+</resources>

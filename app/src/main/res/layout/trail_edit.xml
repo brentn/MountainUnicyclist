@@ -1,0 +1,228 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.brentandjody.mountainunicyclist.TrailEditActivity"
+    android:id="@+id/background"
+    android:elevation="4dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/scrollView" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:elevation="2dp">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/title"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="8dp"
+                    android:hint="@string/trail_name"
+                    android:inputType="textCapWords"
+                    android:editable="true"
+                    android:background="@color/background_floating_material_light"
+                    android:padding="8dp"
+                    android:layout_gravity="left|center_vertical" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/location_picker_button"
+                    android:layout_gravity="right|center_vertical"
+                    android:src="@android:drawable/ic_dialog_map" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Difficulty"
+                android:id="@+id/textView"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="24dp"
+                android:background="@color/background"
+                android:paddingLeft="8dp"
+                android:paddingTop="12dp" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/difficulty"
+                android:orientation="horizontal"
+                android:showDividers="middle"
+                android:background="@color/background"
+                android:gravity="center_horizontal"
+                android:paddingBottom="12dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView"
+                    android:src="@drawable/ic_easy"
+                    android:labelFor="@+id/easy" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/easy"
+                    android:layout_marginLeft="-5dp"
+                    android:layout_marginRight="5dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView2"
+                    android:src="@drawable/ic_medium"
+                    android:labelFor="@+id/medium" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/medium"
+                    android:checked="true"
+                    android:layout_marginLeft="-5dp"
+                    android:layout_marginRight="5dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView3"
+                    android:src="@drawable/ic_difficult"
+                    android:labelFor="@+id/difficult" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/difficult"
+                    android:layout_marginLeft="-5dp"
+                    android:layout_marginRight="5dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView4"
+                    android:src="@drawable/ic_expert"
+                    android:labelFor="@+id/expert" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/expert"
+                    android:layout_marginLeft="-5dp"
+                    android:layout_marginRight="5dp" />
+
+            </RadioGroup>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/description"
+                android:layout_below="@+id/title"
+                android:layout_centerHorizontal="true"
+                android:inputType="textMultiLine|textCapSentences"
+                android:hint="@string/description"
+                android:editable="true"
+                android:lines="4"
+                android:longClickable="true"
+                android:gravity="top"
+                android:background="@color/background_floating_material_light"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Rating"
+                android:id="@+id/textView2"
+                android:textColor="@color/secondary_text"
+                android:background="@color/background"
+                android:paddingLeft="8dp"
+                android:paddingTop="12dp" />
+
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rating"
+                android:numStars="8"
+                android:nestedScrollingEnabled="true"
+                android:rating="4"
+                android:layout_gravity="center"
+                android:background="@color/background" />
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/trailsystem"
+                android:layout_gravity="center_horizontal"
+                android:prompt="@id/trailsystem"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/featured_image"
+                android:id="@+id/textView3"
+                android:textColor="@color/secondary_text"
+                android:labelFor="@+id/photo_picker"
+                android:layout_marginTop="24dp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="96dp"
+                android:id="@+id/photo_picker" >
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:id="@+id/photos"
+                    android:minHeight="96dp"></LinearLayout>
+            </HorizontalScrollView>
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/buttons"
+                android:layout_marginTop="24dp">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/ok"
+                    android:id="@+id/ok_button"
+                    android:layout_alignTop="@+id/cancel_button"
+                    android:layout_alignRight="@+id/description"
+                    android:layout_alignEnd="@+id/description"
+                    android:elevation="6dp"
+                    android:layout_gravity="right|center_vertical"
+                    android:focusable="true" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cancel"
+                    android:id="@+id/cancel_button"
+                    android:layout_below="@+id/description"
+                    android:layout_alignLeft="@+id/description"
+                    android:layout_alignStart="@+id/description"
+                    android:elevation="6dp"
+                    android:layout_gravity="left|center_vertical" />
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
