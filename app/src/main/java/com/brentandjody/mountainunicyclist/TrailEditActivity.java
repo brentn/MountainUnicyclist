@@ -2,7 +2,6 @@ package com.brentandjody.mountainunicyclist;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,22 +9,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 
-import com.brentandjody.mountainunicyclist.data.LocationsDB;
+import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Photo;
-import com.brentandjody.mountainunicyclist.data.PhotoDB;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 
 
 public class TrailEditActivity extends ActionBarActivity {
-    private PhotoDB mPhotos;
-    private LocationsDB mLocations;
     private Trail trail = null;
     private EditText name;
     private RadioGroup difficulty;
@@ -51,30 +49,9 @@ public class TrailEditActivity extends ActionBarActivity {
         okButton = (Button) findViewById(R.id.ok_button);
         setupViewFromIntent();
 
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ((Application) getApplication()).openDB();
-        mPhotos = ((Application) getApplication()).getPhotos();
-        mLocations = ((Application) getApplication()).getLocations();
         setupButtonListeners();
         setupTrailsystem();
         setupPhotoPicker();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        ((Application)getApplication()).closeDB();
-        //TODO:clear trailsystem dropdown
-        cancelButton.setOnClickListener(null);
-        okButton.setOnClickListener(null);
-        photo_picker.removeAllViews();
-        mPhotos=null;
-        mLocations=null;
     }
 
     private void saveTrail() {
@@ -91,16 +68,9 @@ public class TrailEditActivity extends ActionBarActivity {
             trail.setDescription(description.getText().toString());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
-            //save trail
-            int trail_id=mLocations.InsertOrUpdate(trail);
             // update missing trailid on photo (not always necessary)
-            if (trail.PhotoId()>=0) {
-                Photo photo = mPhotos.Get(trail.PhotoId());
-                if (photo != null) {
-                    photo.setOwnerId(trail_id);
-                    //save photo
-                    mPhotos.InsertOrUpdate(photo);
-                }
+            if (trail.Photo()!=null) {
+                trail.Photo().setOwner(trail);
             }
         }
         setResult(Activity.RESULT_OK);
@@ -108,10 +78,7 @@ public class TrailEditActivity extends ActionBarActivity {
     }
 
     private void cancelTrail() {
-        Photo photo = mPhotos.Get(trail.PhotoId());
-        if (photo!=null && photo.Owner()==-1) {
-            mPhotos.Delete(photo.ID());
-        }
+        Photo.Delete(trail.Photo().ID());
         finish();
     }
 
@@ -124,9 +91,17 @@ public class TrailEditActivity extends ActionBarActivity {
             trail = new Trail();
         if (intent.hasExtra("location"))
             trail.setLocation((LatLng) intent.getExtras().getParcelable("location"));
-        if (intent.hasExtra("photoid"))
-            trail.setPhotoid(intent.getIntExtra("photoid", -1));
-
+        if (intent.hasExtra("photoid")) {
+            String id = intent.getStringExtra("photoid");
+            ParseQuery<Photo> query = Photo.getQuery();
+            query.fromLocalDatastore();
+            query.whereEqualTo(DBContract.Photos._ID, id);
+            query.getFirstInBackground(new GetCallback<Photo>() {
+                public void done(Photo photo, ParseException e) {
+                    trail.setPhoto(photo);
+                }
+           });
+        };
         name.setText(trail.Name());
         switch (trail.Difficulty()) {
             case EASY:
@@ -170,22 +145,22 @@ public class TrailEditActivity extends ActionBarActivity {
 
     private void setupPhotoPicker() {
 
-        if (trail.ID()<0) { //new trail
-            if (trail.PhotoId()>=0) {
-                Photo photo = mPhotos.Get(trail.PhotoId());
-                ImageView iv = new ImageView(this);
-                iv.setMaxHeight(96);
-                iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
-                photo_picker.addView(iv);
-            }
-        } else { //existing trail
-            for (Photo photo : mPhotos.GetPhotosForTrail(trail.ID())) {
-                ImageView iv = new ImageView(this);
-                iv.setMaxHeight(96);
-                iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
-                photo_picker.addView(iv);
-            }
-        }
+//        if (trail.ID()<0) { //new trail
+//            if (trail.PhotoId()>=0) {
+//                Photo photo = mPhotos.Get(trail.PhotoId());
+//                ImageView iv = new ImageView(this);
+//                iv.setMaxHeight(96);
+//                iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
+//                photo_picker.addView(iv);
+//            }
+//        } else { //existing trail
+//            for (Photo photo : mPhotos.GetPhotosForTrail(trail.ID())) {
+//                ImageView iv = new ImageView(this);
+//                iv.setMaxHeight(96);
+//                iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
+//                photo_picker.addView(iv);
+//            }
+//        }
         //TODO:highlight current featured image
     }
 

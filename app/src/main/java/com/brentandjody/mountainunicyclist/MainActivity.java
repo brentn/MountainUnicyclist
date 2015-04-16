@@ -17,9 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.brentandjody.mountainunicyclist.data.LocationsDB;
 import com.brentandjody.mountainunicyclist.data.Photo;
-import com.brentandjody.mountainunicyclist.data.PhotoDB;
+import com.brentandjody.mountainunicyclist.data.Trail;
 import com.melnykov.fab.FloatingActionButton;
 
 
@@ -36,8 +35,6 @@ public class MainActivity extends ActionBarActivity {
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
-    private static LocationsDB mLocations;
-    private static PhotoDB mPhotos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,20 +47,6 @@ public class MainActivity extends ActionBarActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        ((Application)getApplication()).closeDB();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ((Application)getApplication()).openDB();
-        mLocations = ((Application)getApplication()).getLocations();
-        mPhotos = ((Application)getApplication()).getPhotos();
     }
 
     @Override
@@ -130,7 +113,7 @@ public class MainActivity extends ActionBarActivity {
     public static class PlacesFragment extends Fragment {
         private static final String ARG_SECTION_NUMBER = "section_number";
         private RecyclerView mRecyclerView;
-        private RecyclerView.Adapter mAdapter;
+        private TrailAdapter mAdapter;
         private RecyclerView.LayoutManager mLayoutManager;
 
         /**
@@ -156,7 +139,8 @@ public class MainActivity extends ActionBarActivity {
             mRecyclerView.setHasFixedSize(true);
             mLayoutManager = new LinearLayoutManager(getActivity());
             mRecyclerView.setLayoutManager(mLayoutManager);
-            mAdapter = new TrailAdapter(getActivity(), mLocations.getAllTrails());
+            mAdapter = new TrailAdapter(getActivity());
+            Trail.LoadTrailAdapter(mAdapter);
             mRecyclerView.setAdapter(mAdapter);
             FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
             fab.attachToRecyclerView(mRecyclerView);
@@ -177,9 +161,8 @@ public class MainActivity extends ActionBarActivity {
                     if (resultCode == RESULT_OK) {
                         Intent intent = new Intent (getActivity(), TrailEditActivity.class);
                         if (data.hasExtra("map_screenshot")) {
-                            Photo photo = new Photo(Photo.PHOTO_TYPE.TRAIL, -1, data.getByteArrayExtra("map_screenshot"));
-                            photo.setID(mPhotos.InsertOrUpdate(photo));
-                            mPhotos.close();
+                            byte[] image = data.getByteArrayExtra("map_screenshot");
+                            Photo photo = new Photo(image);
                             intent.putExtra("photoid", photo.ID());
                         }
                         mAdapter.notifyDataSetChanged();

@@ -6,22 +6,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.RatingBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.brentandjody.mountainunicyclist.data.Photo;
-import com.brentandjody.mountainunicyclist.data.PhotoDB;
 import com.brentandjody.mountainunicyclist.data.Trail;
 
 
 public class TrailActivity extends ActionBarActivity {
-    private PhotoDB mPhotos;
     private Trail trail = null;
     private ImageView feature_photo;
     private TextView name;
@@ -51,29 +44,14 @@ public class TrailActivity extends ActionBarActivity {
         commentsButton = (TextView) findViewById(R.id.add_comment_button);
         ridesButton = (TextView) findViewById(R.id.rides_button);
         featuresButton = (TextView) findViewById(R.id.features_button);
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        ((Application)getApplication()).closeDB();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ((Application)getApplication()).openDB();
-        mPhotos = ((Application)getApplication()).getPhotos();
         populateFields();
     }
 
+
     private void populateFields() {
         if (trail==null) return;
-        Photo photo = mPhotos.Get(trail.PhotoId());
-        if (photo!=null)
-            feature_photo.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
-        name.setText(trail.Name());
+        feature_photo.setImageBitmap(
+                BitmapFactory.decodeByteArray(trail.Photo().Data(), 0, trail.Photo().Data().length));
         difficulty.setImageResource(trail.getDifficultyIcon());
         rating.setText(trail.getStars());
         description.setText(trail.Description());
@@ -82,12 +60,12 @@ public class TrailActivity extends ActionBarActivity {
     }
 
     private void setupPhotoPicker() {
-        for (Photo photo : mPhotos.GetPhotosForTrail(trail.ID())) {
-            ImageView iv = new ImageView(this);
-            iv.setMaxHeight(96);
-            iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
-            photo_picker.addView(iv);
-        }
+//        for (Photo photo : Photos.GetPhotosForTrail(trail.ID())) {
+//            ImageView iv = new ImageView(this);
+//            iv.setMaxHeight(96);
+//            iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
+//            photo_picker.addView(iv);
+//        }
     }
 
     @Override

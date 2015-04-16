@@ -3,9 +3,7 @@ package com.brentandjody.mountainunicyclist;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.location.Location;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.brentandjody.mountainunicyclist.data.Photo;
-import com.brentandjody.mountainunicyclist.data.PhotoDB;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -32,7 +29,6 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
 
     private List<Trail> mDataset;
-    private PhotoDB mPhotos;
     private Context mContext;
     private LatLng mMyLocation;
 
@@ -64,12 +60,15 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         }
     }
 
-    public TrailAdapter(Context context, List<Trail> dataset) {
+    public TrailAdapter(Context context) {
         mContext = context;
-        mPhotos = ((Application)context.getApplicationContext()).getPhotos();
-        mDataset = dataset;
+        mDataset = null;
         mMyLocation = LocationHelper.getGPS(context);
 
+    }
+
+    public void Fill(List<Trail> dataset) {
+        mDataset = dataset;
     }
 
     @Override
@@ -81,19 +80,20 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final ViewHolder finalHolder = holder;
         final Trail trail = mDataset.get(position);
+        final ImageView featured_image = holder.mPhoto;
         holder.mTitle.setText(trail.Name());
         holder.mDescription.setText(trail.Description());
         holder.mPhoto.setImageBitmap(null);
         //indirect values
-        Task.callInBackground(new Callable<Void>() {
-            public Void call() {
-                Photo photo = mPhotos.Get(trail.PhotoId());
-                finalHolder.mPhoto.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
-                return null;
-            }
-        });
+        featured_image.setImageBitmap(
+                BitmapFactory.decodeByteArray(trail.Photo().Data(), 0, trail.Photo().Data().length));
+//        Task.callInBackground(new Callable<Void>() {
+//            public Void call() {
+//                Photo.Load(trail.PhotoId(), featured_image);
+//                return null;
+//            }
+//        });
         int resID = trail.getDifficultyIcon();
         if (resID >=0) holder.mDifficulty.setImageResource(resID);
         else holder.mDifficulty.setImageResource(0);
@@ -132,6 +132,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
+        if (mDataset==null) return 0;
         return mDataset.size();
     }
 

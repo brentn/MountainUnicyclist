@@ -6,15 +6,14 @@ package com.brentandjody.mountainunicyclist.data;
  * Created by brent on 07/04/15.
  */
 public class DBContract {
-    private final int DELETED_FLAG = 0x01;
-    private final int DIRTY_FLAG = 0x02;
+    private static final int DELETED_FLAG = 0;
+    private static final int DIRTY_FLAG = 1;
 
-    public static final class TrailSystem implements IBaseColumns {
+    public static final class Trailsystem implements IBaseColumns {
         public static final String TABLE_NAME = "trailsystem";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_DESCRIPTION = "description";
-        public static final String COLUMN_LAT = "lat";
-        public static final String COLUMN_LONG = "long";
+        public static final String COLUMN_LOCATION = "location";
         public static final String COLUMN_PHOTO = "photo_id";
     }
 
@@ -23,8 +22,7 @@ public class DBContract {
         public static final String COLUMN_TRAILSYSTEM = "trailsystem_id";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_DESCRIPTION = "description";
-        public static final String COLUMN_LAT = "lat";
-        public static final String COLUMN_LONG = "long";
+        public static final String COLUMN_LOCATION = "location";
         public static final String COLUMN_PHOTO = "photo_id";
         public static final String COLUMN_DIFFICULTY = "difficulty";
         public static final String COLUMN_RATING = "rating";
@@ -48,10 +46,16 @@ public class DBContract {
         public static final String COLUMN_DATA = "data";
     }
 
-    public boolean isDeleted(int flags) { return (flags & DELETED_FLAG) !=0; }
-    public boolean isDirty(int flags) { return (flags & DIRTY_FLAG) !=0; }
+    public static boolean isDeleted(int flags) { return (flags & (1<<DELETED_FLAG)) !=0; }
+    public static boolean isDirty(int flags) { return (flags & (1<<DIRTY_FLAG)) !=0; }
 
-    public int Flags(boolean deleted, boolean dirty) {
+    public static int setDeleted(int flags) {return flags | (1<<DELETED_FLAG);}
+    public static int setDirty(int flags) {return flags | (1<<DIRTY_FLAG);}
+
+    public static int clearDeleted(int flags) {return flags & ~(1<<DELETED_FLAG);}
+    public static int clearDirty(int flags) {return flags & ~(1<<DIRTY_FLAG);}
+
+    public static int Flags(boolean deleted, boolean dirty) {
         int result = 0;
         if (deleted) result &= DELETED_FLAG;
         if (dirty) result &= DIRTY_FLAG;
