@@ -64,64 +64,70 @@
                 android:showDividers="middle"
                 android:background="@color/background"
                 android:gravity="center_horizontal"
-                android:paddingBottom="12dp">
+                android:paddingBottom="12dp"
+                android:paddingRight="20dp"
+                android:paddingLeft="20dp">
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/easy"
+                    android:layout_marginRight="-10dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/imageView"
                     android:src="@drawable/ic_easy"
-                    android:labelFor="@+id/easy" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/easy"
-                    android:layout_marginLeft="-5dp"
-                    android:layout_marginRight="5dp" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageView2"
-                    android:src="@drawable/ic_medium"
-                    android:labelFor="@+id/medium" />
+                    android:labelFor="@+id/easy"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="-10dp" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/medium"
                     android:checked="true"
-                    android:layout_marginLeft="-5dp"
-                    android:layout_marginRight="5dp" />
+                    android:layout_marginRight="-10dp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView2"
+                    android:src="@drawable/ic_medium"
+                    android:labelFor="@+id/medium"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="-10dp" />
+
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/difficult"
+                    android:layout_marginRight="-10dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/imageView3"
                     android:src="@drawable/ic_difficult"
-                    android:labelFor="@+id/difficult" />
+                    android:labelFor="@+id/difficult"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="-10dp" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/difficult"
-                    android:layout_marginLeft="-5dp"
-                    android:layout_marginRight="5dp" />
+                    android:id="@+id/expert"
+                    android:layout_marginRight="-10dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/imageView4"
                     android:src="@drawable/ic_expert"
-                    android:labelFor="@+id/expert" />
-
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/expert"
-                    android:layout_marginLeft="-5dp"
-                    android:layout_marginRight="5dp" />
+                    android:labelFor="@+id/expert"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="-10dp" />
 
             </RadioGroup>
 
@@ -148,7 +154,6 @@
                 android:text="Rating"
                 android:id="@+id/textView2"
                 android:textColor="@color/secondary_text"
-                android:background="@color/background"
                 android:paddingLeft="8dp"
                 android:paddingTop="12dp" />
 
@@ -157,10 +162,11 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/rating"
                 android:numStars="8"
-                android:nestedScrollingEnabled="true"
                 android:rating="4"
-                android:layout_gravity="center"
-                android:background="@color/background" />
+                android:isIndicator="false"
+                android:stepSize="1"
+                style="@android:style/Widget.DeviceDefault.Light.RatingBar.Indicator"
+                android:layout_gravity="center_horizontal" />
 
             <Spinner
                 android:layout_width="match_parent"

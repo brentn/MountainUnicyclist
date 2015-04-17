@@ -19,9 +19,7 @@ import java.util.UUID;
 @ParseClassName("Photo")
 public class Photo extends ParseObject {
 
-    public Photo() {
-        setID();
-    }
+    public Photo() {}
     public Photo(byte[] data) {
         setID();
         setData(data);
@@ -33,23 +31,32 @@ public class Photo extends ParseObject {
 
     public void setID() {
         UUID uuid = UUID.randomUUID();
-        put(DBContract.Photos._ID, uuid.toString());
+        put(DBContract.Photos._UID, uuid.toString());
     }
     public void setFLAGS(int flags) { put(DBContract.Photos._FLAGS, flags);}
-    public void setOwner(ParseObject owner) { put(DBContract.Photos.COLUMN_OWNER_ID, owner);}
-    public void setDominantColor(String color) { put(DBContract.Photos.COLUMN_DOMINANT_COLOR, color);}
-    public void setData(byte[] data) { put(DBContract.Photos.COLUMN_DATA, data);}
+    public void setOwnerId(String owner) {
+        if (owner==null) return;
+        put(DBContract.Photos.COLUMN_OWNER_ID, owner);
+    }
+    public void setDominantColor(String color) {
+        if (color==null) return;
+        put(DBContract.Photos.COLUMN_DOMINANT_COLOR, color);
+    }
+    public void setData(byte[] data) {
+        if (data==null) return;
+        put(DBContract.Photos.COLUMN_DATA, data);
+    }
 
-    public String ID() { return getString(DBContract.Photos._ID); }
+    public String ID() { return getString(DBContract.Photos._UID); }
     public int FLAGS() { return getInt(DBContract.Photos._FLAGS); }
-    public ParseObject Owner() { return getParseObject(DBContract.Photos.COLUMN_OWNER_ID); }
+    public String OwnerId() { return getString(DBContract.Photos.COLUMN_OWNER_ID); }
     public String DominantColor() { return getString(DBContract.Photos.COLUMN_DOMINANT_COLOR);}
     public byte[] Data() { return getBytes(DBContract.Photos.COLUMN_DATA); }
 
     public static void Load(String id, final ImageView image) {
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();
-        query.whereEqualTo(DBContract.Photos._ID, id);
+        query.whereEqualTo(DBContract.Photos._UID, id);
         query.getFirstInBackground(new GetCallback<Photo>() {
             public void done(Photo photo, ParseException e) {
                 if (e == null) {
@@ -70,7 +77,7 @@ public class Photo extends ParseObject {
     public static void Delete(String id) {
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();
-        query.whereEqualTo(DBContract.Photos._ID, id);
+        query.whereEqualTo(DBContract.Photos._UID, id);
         query.getFirstInBackground(new GetCallback<Photo>() {
             @Override
             public void done(Photo photo, ParseException e) {

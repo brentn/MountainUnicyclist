@@ -2,7 +2,10 @@ package com.brentandjody.mountainunicyclist;
 
 import java.util.Locale;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,14 +20,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.melnykov.fab.FloatingActionButton;
+import com.parse.ParseAnonymousUtils;
+import com.parse.ParseUser;
 
 
 public class MainActivity extends ActionBarActivity {
-    static final int NEW_TRAIL = 1;
-    static final int EDIT_TRAIL = 2;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -57,6 +62,16 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Check if we have a real user
+        if (!ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
+            loadFromParse();
+        }
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -69,6 +84,22 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void loadFromParse() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if ((ni != null) && (ni.isConnected())) {
+            if (!ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
+            } else {
+//            // If we have a network connection but no logged in user, direct
+//            // the person to log in or sign up.
+//            ParseLoginBuilder builder = new ParseLoginBuilder(this);
+//            startActivityForResult(builder.build(), LOGIN_ACTIVITY_CODE);
+            }
+        } else {
+            //TODO:
+        }
     }
 
 
@@ -148,7 +179,7 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v) {
                     Intent locationPickerIntent = new Intent(getActivity(), LocationPickerActivity.class);
-                    startActivityForResult(locationPickerIntent, NEW_TRAIL);
+                    startActivityForResult(locationPickerIntent, Application.NEW_LOCATION);
                 }
             });
 
@@ -157,22 +188,26 @@ public class MainActivity extends ActionBarActivity {
 
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             switch (requestCode) {
-                case NEW_TRAIL: {
+                case Application.NEW_LOCATION: {
                     if (resultCode == RESULT_OK) {
                         Intent intent = new Intent (getActivity(), TrailEditActivity.class);
                         if (data.hasExtra("map_screenshot")) {
                             byte[] image = data.getByteArrayExtra("map_screenshot");
                             Photo photo = new Photo(image);
+                            photo.setFLAGS(DBContract.setTemporary(photo.FLAGS()));
+                            photo.pinInBackground();
+                            photo.saveEventually();
                             intent.putExtra("photoid", photo.ID());
                         }
-                        mAdapter.notifyDataSetChanged();
-                        intent.putExtra("location", data.getDoubleArrayExtra("location"));
+                        Trail.LoadTrailAdapter(mAdapter);
+                        intent.putExtra("location", data.getParcelableExtra("location"));
                         startActivity(intent);
                     }
                 }
-                case EDIT_TRAIL: {
-                    if (resultCode == RESULT_OK)
-                        mAdapter.notifyDataSetChanged();
+                case Application.EDIT_TRAIL: {
+                    if (resultCode == RESULT_OK) {
+                        Trail.LoadTrailAdapter(mAdapter);
+                    }
                 }
             }
         }

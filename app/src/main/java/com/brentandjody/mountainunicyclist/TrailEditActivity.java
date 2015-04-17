@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
@@ -24,13 +26,15 @@ import com.parse.ParseQuery;
 
 
 public class TrailEditActivity extends ActionBarActivity {
-    private Trail trail = null;
+
+    private Trail mTrail = null;
     private EditText name;
     private RadioGroup difficulty;
     private RatingBar rating;
     private EditText description;
     private Spinner trailsystem;
     private LinearLayout photo_picker;
+    private ImageButton locationButton;
     private Button cancelButton;
     private Button okButton;
 
@@ -45,53 +49,68 @@ public class TrailEditActivity extends ActionBarActivity {
         description = (EditText) findViewById(R.id.description);
         trailsystem = (Spinner) findViewById(R.id.trailsystem);
         photo_picker = (LinearLayout) findViewById(R.id.photos);
+        locationButton = (ImageButton) findViewById(R.id.location_picker_button);
         cancelButton = (Button) findViewById(R.id.cancel_button);
         okButton = (Button) findViewById(R.id.ok_button);
-        setupViewFromIntent();
-
-        setupButtonListeners();
-        setupTrailsystem();
-        setupPhotoPicker();
+        Intent intent = getIntent();
+        if (intent.hasExtra("trailId")) {
+            ParseQuery<Trail> query = Trail.getQuery();
+            query.fromLocalDatastore();
+            query.whereEqualTo(DBContract.Trail._ID, intent.getStringExtra("trailId"));
+            query.getFirstInBackground(new GetCallback<Trail>() {
+                @Override
+                public void done(Trail trail, ParseException e) {
+                    mTrail = trail;
+                    setupViews();
+                }
+            });
+        } else {
+            mTrail = new Trail();
+            setupViews();
+       }
     }
 
     private void saveTrail() {
-        if (trail!=null) {
-            trail.setName(name.getText().toString());
+        if (mTrail !=null) {
+            mTrail.setName(name.getText().toString());
             switch (difficulty.getCheckedRadioButtonId()) {
-                case R.id.easy:trail.setDifficulty(Trail.Difficulty.EASY); break;
-                case R.id.medium:trail.setDifficulty(Trail.Difficulty.MEDIUM); break;
-                case R.id.difficult:trail.setDifficulty(Trail.Difficulty.DIFFICULT); break;
-                case R.id.expert:trail.setDifficulty(Trail.Difficulty.EXPERT); break;
-                default:trail.setDifficulty(Trail.Difficulty.MEDIUM);
+                case R.id.easy:
+                    mTrail.setDifficulty(Trail.Difficulty.EASY); break;
+                case R.id.medium:
+                    mTrail.setDifficulty(Trail.Difficulty.MEDIUM); break;
+                case R.id.difficult:
+                    mTrail.setDifficulty(Trail.Difficulty.DIFFICULT); break;
+                case R.id.expert:
+                    mTrail.setDifficulty(Trail.Difficulty.EXPERT); break;
+                default:
+                    mTrail.setDifficulty(Trail.Difficulty.MEDIUM);
             }
-            trail.setRating(Math.round(rating.getRating()));
-            trail.setDescription(description.getText().toString());
+            mTrail.setRating(Math.round(rating.getRating()));
+            mTrail.setDescription(description.getText().toString());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
             // update missing trailid on photo (not always necessary)
-            if (trail.Photo()!=null) {
-                trail.Photo().setOwner(trail);
+            if (mTrail.Photo()!=null) {
+                mTrail.Photo().setOwnerId(mTrail.ID());
             }
         }
+        mTrail.pinInBackground();
+        mTrail.saveEventually();
         setResult(Activity.RESULT_OK);
         finish();
     }
 
     private void cancelTrail() {
-        Photo.Delete(trail.Photo().ID());
+        Photo.Delete(mTrail.Photo().ID());
         finish();
     }
 
-    private void setupViewFromIntent() {
+    private void setupViews() {
         Intent intent = getIntent();
-        //build trail object
-        if (intent.hasExtra("trail"))
-            trail = intent.getExtras().getParcelable("trail");
-        else
-            trail = new Trail();
         if (intent.hasExtra("location")) {
-            double[] coords = intent.getDoubleArrayExtra("location");
-            trail.setLocation(new LatLng(coords[0], coords[1]));
+            mTrail.setLocation((LatLng) intent.getParcelableExtra("location"));
+            Log.d("LATITUDE", mTrail.Location().latitude+"");
+            Log.d("LONGITUDE", mTrail.Location().longitude+"");
         }
         if (intent.hasExtra("photoid")) {
             String id = intent.getStringExtra("photoid");
@@ -100,14 +119,14 @@ public class TrailEditActivity extends ActionBarActivity {
             query.whereEqualTo(DBContract.Photos._ID, id);
             query.getFirstInBackground(new GetCallback<Photo>() {
                 public void done(Photo photo, ParseException e) {
-                    trail.setPhoto(photo);
+                    mTrail.setPhoto(photo);
                 }
            });
         };
-        name.setText(trail.Name());
-        if (trail.Difficulty()==null)
-            trail.setDifficulty(Trail.Difficulty.MEDIUM);
-        switch (trail.Difficulty()) {
+        name.setText(mTrail.Name());
+        if (mTrail.Difficulty()==null)
+            mTrail.setDifficulty(Trail.Difficulty.MEDIUM);
+        switch (mTrail.Difficulty()) {
             case EASY:
                 difficulty.check(R.id.easy);
                 break;
@@ -124,11 +143,22 @@ public class TrailEditActivity extends ActionBarActivity {
                 difficulty.check(R.id.medium);
                 break;
         }
-        rating.setRating(trail.Rating());
-        description.setText(trail.Description());
+        rating.setRating(mTrail.Rating());
+        description.setText(mTrail.Description());
+        setupButtonListeners();
+        setupTrailsystem();
+        setupPhotoPicker();
     }
 
     private void setupButtonListeners() {
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(TrailEditActivity.this, LocationPickerActivity.class);
+                intent.putExtra("location", mTrail.Location());
+                startActivityForResult(intent, Application.EDIT_TRAIL);
+            }
+        });
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,24 +178,7 @@ public class TrailEditActivity extends ActionBarActivity {
     }
 
     private void setupPhotoPicker() {
-
-//        if (trail.ID()<0) { //new trail
-//            if (trail.PhotoId()>=0) {
-//                Photo photo = mPhotos.Get(trail.PhotoId());
-//                ImageView iv = new ImageView(this);
-//                iv.setMaxHeight(96);
-//                iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
-//                photo_picker.addView(iv);
-//            }
-//        } else { //existing trail
-//            for (Photo photo : mPhotos.GetPhotosForTrail(trail.ID())) {
-//                ImageView iv = new ImageView(this);
-//                iv.setMaxHeight(96);
-//                iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
-//                photo_picker.addView(iv);
-//            }
-//        }
-        //TODO:highlight current featured image
+    //TODO:
     }
 
     @Override
@@ -189,4 +202,17 @@ public class TrailEditActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case Application.EDIT_TRAIL: {
+                if (resultCode == RESULT_OK) {
+                    mTrail.setLocation((LatLng) data.getParcelableExtra("location"));
+                    Log.d("LATITUDE", mTrail.Location().latitude+"");
+                    Log.d("LONGITUDE", mTrail.Location().longitude+"");
+                }
+            }
+        }
+    }
+
 }

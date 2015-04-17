@@ -67,7 +67,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
     }
 
-    public void Fill(List<Trail> dataset) {
+    public void LoadData(List<Trail> dataset) {
         mDataset = dataset;
     }
 
@@ -82,12 +82,15 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Trail trail = mDataset.get(position);
         final ImageView featured_image = holder.mPhoto;
-        holder.mTitle.setText(trail.Name());
+        if (trail.Name().isEmpty()) holder.mTitle.setText(mContext.getString(R.string.trail));
+        else holder.mTitle.setText(trail.Name());
         holder.mDescription.setText(trail.Description());
         holder.mPhoto.setImageBitmap(null);
         //indirect values
-        featured_image.setImageBitmap(
-                BitmapFactory.decodeByteArray(trail.Photo().Data(), 0, trail.Photo().Data().length));
+        if (trail.Photo()!=null) {
+            featured_image.setImageBitmap(
+                    BitmapFactory.decodeByteArray(trail.Photo().Data(), 0, trail.Photo().Data().length));
+        }
 //        Task.callInBackground(new Callable<Void>() {
 //            public Void call() {
 //                Photo.Load(trail.PhotoId(), featured_image);
@@ -116,7 +119,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, TrailEditActivity.class);
-                intent.putExtra("trail", trail);
+                intent.putExtra("trailId", trail.ID());
                 mContext.startActivity(intent);
             }
         });
@@ -124,8 +127,8 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, TrailActivity.class );
-                intent.putExtra("trail", trail);
-                ((Activity)mContext).startActivityForResult(intent, MainActivity.EDIT_TRAIL);
+                intent.putExtra("trailId", trail.ID());
+                ((Activity)mContext).startActivityForResult(intent, Application.EDIT_TRAIL);
             }
         });
     }

@@ -1,7 +1,6 @@
 package com.brentandjody.mountainunicyclist.data;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import android.util.Log;
 
 import com.brentandjody.mountainunicyclist.TrailAdapter;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,27 +22,14 @@ import static com.brentandjody.mountainunicyclist.R.drawable.ic_medium;
  * Created by brent on 10/04/15.
  */
 @ParseClassName("Trail")
-public class Trail extends ParseObject implements Parcelable {
+public class Trail extends ParseObject {
     public enum Difficulty {NOT_SET, EASY, MEDIUM, DIFFICULT, EXPERT}
     private final int MAX_STARS = 8;
 
-    public Trail() {
-    }
-    public Trail(Parcel in) {
-        put(DBContract.Trail._ID, in.readString());
-        put(DBContract.Trail.COLUMN_NAME, in.readString());
-        put(DBContract.Trail.COLUMN_DESCRIPTION, in.readString());
-        put(DBContract.Trail.COLUMN_LAT, in.readDouble());
-        put(DBContract.Trail.COLUMN_LNG, in.readDouble());
-        put(DBContract.Trail.COLUMN_DIFFICULTY, Difficulty.values()[in.readInt()]);
-        put(DBContract.Trail.COLUMN_RATING, in.readInt());
-//        put(DBContract.Trail.COLUMN_TRAILSYSTEM, in.readValue());
-//        put(DBContract.Trail.COLUMN_PHOTO, in.readArray());
-        put(DBContract.Trail._FLAGS, in.readInt());
-    }
+    public Trail() {}
     public Trail(String id, String name, String description, LatLng location,
                 Difficulty difficulty, int rating, Trailsystem trailsystem, Photo photo, int flags) {
-        put(DBContract.Trail._ID, id);
+        put(DBContract.Trail._UID, id);
         put(DBContract.Trail.COLUMN_NAME, name);
         put(DBContract.Trail.COLUMN_DESCRIPTION, description);
         put(DBContract.Trail.COLUMN_LAT, location.latitude);
@@ -87,7 +73,7 @@ public class Trail extends ParseObject implements Parcelable {
     }
     public void setFlags(int flags) { put(DBContract.Trail._FLAGS, flags);}
 
-    public String ID() {return getString(DBContract.Trail._ID);}
+    public String ID() {return getString(DBContract.Trail._UID);}
     public String Name() {return getString(DBContract.Trail.COLUMN_NAME);}
     public String Description() {return getString(DBContract.Trail.COLUMN_DESCRIPTION);}
     public LatLng Location() {
@@ -104,10 +90,13 @@ public class Trail extends ParseObject implements Parcelable {
     public static void LoadTrailAdapter(final TrailAdapter adapter) {
         ParseQuery<Trail> query = ParseQuery.getQuery("Trail");
         query.fromLocalDatastore();
+        Log.d("Trail", "starting Adapter load");
         query.findInBackground(new FindCallback<com.brentandjody.mountainunicyclist.data.Trail>() {
             @Override
             public void done(List<Trail> trails, ParseException e) {
-                adapter.Fill(trails);
+                adapter.LoadData(trails);
+                adapter.notifyDataSetChanged();
+                Log.d("Trail", "Adapter loaded");
             }
         });
     }
@@ -140,40 +129,6 @@ public class Trail extends ParseObject implements Parcelable {
         return result;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getString(DBContract.Trail._ID));
-        dest.writeString(getString(DBContract.Trail.COLUMN_NAME));
-        dest.writeString(getString(DBContract.Trail.COLUMN_DESCRIPTION));
-        double lat = getDouble(DBContract.Trail.COLUMN_LAT);
-        double lng = getDouble(DBContract.Trail.COLUMN_LNG);
-        LatLng location = new LatLng(lat, lng);
-        dest.writeDouble(location.latitude);
-        dest.writeDouble(location.longitude);
-        Difficulty difficulty = (Difficulty) get(DBContract.Trail.COLUMN_DIFFICULTY);
-        dest.writeInt(difficulty.ordinal());
-        dest.writeInt(getInt(DBContract.Trail.COLUMN_RATING));
-        //dest.writeSerializable((Trailsystem) get(DBContract.Trail.COLUMN_TRAILSYSTEM));
-        //dest.writeSerializable((Photo) get(DBContract.Trail.COLUMN_PHOTO));
-        dest.writeInt(getInt(DBContract.Trail._FLAGS));
-    }
-
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Trail createFromParcel(Parcel in){
-            return new Trail(in);
-        }
-
-        @Override
-        public Object[] newArray(int size) {
-            return new Trail[size];
-        }
-
-    };
 }
 
 

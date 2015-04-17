@@ -10,12 +10,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.brentandjody.mountainunicyclist.data.Photo;
+import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 
 
 public class TrailActivity extends ActionBarActivity {
-    private Trail trail = null;
+    private Trail mTrail = null;
     private ImageView feature_photo;
     private TextView name;
     private ImageView difficulty;
@@ -31,9 +34,6 @@ public class TrailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.trail);
-        Intent intent = getIntent();
-        if (intent.hasExtra("trail"))
-            trail = intent.getExtras().getParcelable("trail");
         feature_photo = (ImageView) findViewById(R.id.feature_photo);
         name = (TextView) findViewById(R.id.title);
         difficulty = (ImageView) findViewById(R.id.difficulty_icon);
@@ -44,23 +44,34 @@ public class TrailActivity extends ActionBarActivity {
         commentsButton = (TextView) findViewById(R.id.add_comment_button);
         ridesButton = (TextView) findViewById(R.id.rides_button);
         featuresButton = (TextView) findViewById(R.id.features_button);
-        populateFields();
+        Intent intent = getIntent();
+        if (intent.hasExtra("trailId")) {
+            ParseQuery<Trail> query = Trail.getQuery();
+            query.fromLocalDatastore();
+            query.whereEqualTo(DBContract.Trail._ID, intent.getStringExtra("trailId"));
+            query.getFirstInBackground(new GetCallback<Trail>() {
+                @Override
+                public void done(Trail trail, ParseException e) {
+                    mTrail = trail;
+                    populateFields();
+                }
+            });
+        }
     }
 
-
     private void populateFields() {
-        if (trail==null) return;
+        if (mTrail ==null) return;
         feature_photo.setImageBitmap(
-                BitmapFactory.decodeByteArray(trail.Photo().Data(), 0, trail.Photo().Data().length));
-        difficulty.setImageResource(trail.getDifficultyIcon());
-        rating.setText(trail.getStars());
-        description.setText(trail.Description());
+                BitmapFactory.decodeByteArray(mTrail.Photo().Data(), 0, mTrail.Photo().Data().length));
+        difficulty.setImageResource(mTrail.getDifficultyIcon());
+        rating.setText(mTrail.getStars());
+        description.setText(mTrail.Description());
         //TODO:trailsystem
         setupPhotoPicker();
     }
 
     private void setupPhotoPicker() {
-//        for (Photo photo : Photos.GetPhotosForTrail(trail.ID())) {
+//        for (Photo photo : Photos.GetPhotosForTrail(mTrail.ID())) {
 //            ImageView iv = new ImageView(this);
 //            iv.setMaxHeight(96);
 //            iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));

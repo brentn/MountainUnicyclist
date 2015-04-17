@@ -20,7 +20,6 @@ public class LocationPickerActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker mMarker = null;
-    private boolean snapshot_finished = false;
     private Intent mData = new Intent();
 
     @Override
@@ -45,7 +44,7 @@ public class LocationPickerActivity extends FragmentActivity {
                     ByteArrayOutputStream bs = new ByteArrayOutputStream();
                     snapshot.compress(Bitmap.CompressFormat.PNG, 50, bs);
                     mData.putExtra("map_screenshot", bs.toByteArray());
-                    mData.putExtra("location", new double[] {mMarker.getPosition().latitude, mMarker.getPosition().longitude});
+                    mData.putExtra("location", mMarker.getPosition());
                     setResult(Activity.RESULT_OK, mData);
                     finish();
                 }
@@ -90,8 +89,17 @@ public class LocationPickerActivity extends FragmentActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        LatLng position = LocationHelper.getGPS(this);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 12));
+        LatLng latLng;
+        if (getIntent().hasExtra("location")) {
+            latLng = getIntent().getParcelableExtra("location");
+            mMarker = mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(getString(R.string.trail_head))
+                    .draggable(true));
+        } else {
+            latLng = LocationHelper.getGPS(this);
+        }
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {

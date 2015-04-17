@@ -8,6 +8,7 @@ package com.brentandjody.mountainunicyclist.data;
 public class DBContract {
     private static final int DELETED_FLAG = 0;
     private static final int DIRTY_FLAG = 1;
+    private static final int TEMP_FLAG = 2;
 
     public static final class Trailsystem implements IBaseColumns {
         public static final String TABLE_NAME = "trailsystem";
@@ -49,12 +50,15 @@ public class DBContract {
 
     public static boolean isDeleted(int flags) { return (flags & (1<<DELETED_FLAG)) !=0; }
     public static boolean isDirty(int flags) { return (flags & (1<<DIRTY_FLAG)) !=0; }
+    public static boolean isTemporary(int flags) {return (flags & (1<<TEMP_FLAG)) !=0; }
 
     public static int setDeleted(int flags) {return flags | (1<<DELETED_FLAG);}
     public static int setDirty(int flags) {return flags | (1<<DIRTY_FLAG);}
+    public static int setTemporary(int flags) {return flags | (1<<TEMP_FLAG);}
 
     public static int clearDeleted(int flags) {return flags & ~(1<<DELETED_FLAG);}
     public static int clearDirty(int flags) {return flags & ~(1<<DIRTY_FLAG);}
+    public static int clearTemporary(int flags) {return flags & ~(1<<TEMP_FLAG);}
 
     public static int Flags(boolean deleted, boolean dirty) {
         int result = 0;

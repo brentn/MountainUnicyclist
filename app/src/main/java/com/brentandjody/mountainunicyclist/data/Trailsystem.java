@@ -17,9 +17,7 @@ public class Trailsystem extends ParseObject {
 
 
     // Constructors
-    public Trailsystem() {
-        setID();
-    }
+    public Trailsystem(){}
     public Trailsystem(int id) {
         put(DBContract.Trailsystem._UID, id);
     }
