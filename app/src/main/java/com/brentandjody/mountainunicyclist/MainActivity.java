@@ -25,7 +25,9 @@ import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.ParseAnonymousUtils;
+import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -190,18 +192,22 @@ public class MainActivity extends ActionBarActivity {
             switch (requestCode) {
                 case Application.NEW_LOCATION: {
                     if (resultCode == RESULT_OK) {
-                        Intent intent = new Intent (getActivity(), TrailEditActivity.class);
+                        final Intent intent = new Intent (getActivity(), TrailEditActivity.class);
                         if (data.hasExtra("map_screenshot")) {
                             byte[] image = data.getByteArrayExtra("map_screenshot");
                             Photo photo = new Photo(image);
                             photo.setFLAGS(DBContract.setTemporary(photo.FLAGS()));
-                            photo.pinInBackground();
-                            photo.saveEventually();
                             intent.putExtra("photoid", photo.ID());
+                            intent.putExtra("location", data.getParcelableExtra("location"));
+                            photo.pinInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    Trail.LoadTrailAdapter(mAdapter);
+                                    startActivity(intent);
+                                }
+                            });
+                            photo.saveEventually();
                         }
-                        Trail.LoadTrailAdapter(mAdapter);
-                        intent.putExtra("location", data.getParcelableExtra("location"));
-                        startActivity(intent);
                     }
                 }
                 case Application.EDIT_TRAIL: {
