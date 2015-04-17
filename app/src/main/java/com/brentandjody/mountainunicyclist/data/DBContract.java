@@ -22,7 +22,8 @@ public class DBContract {
         public static final String COLUMN_TRAILSYSTEM = "trailsystem_id";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_DESCRIPTION = "description";
-        public static final String COLUMN_LOCATION = "location";
+        public static final String COLUMN_LAT = "latitude";
+        public static final String COLUMN_LNG = "longitude";
         public static final String COLUMN_PHOTO = "photo_id";
         public static final String COLUMN_DIFFICULTY = "difficulty";
         public static final String COLUMN_RATING = "rating";

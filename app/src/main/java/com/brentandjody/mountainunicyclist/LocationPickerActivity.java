@@ -45,7 +45,7 @@ public class LocationPickerActivity extends FragmentActivity {
                     ByteArrayOutputStream bs = new ByteArrayOutputStream();
                     snapshot.compress(Bitmap.CompressFormat.PNG, 50, bs);
                     mData.putExtra("map_screenshot", bs.toByteArray());
-                    mData.putExtra("location", mMarker.getPosition());
+                    mData.putExtra("location", new double[] {mMarker.getPosition().latitude, mMarker.getPosition().longitude});
                     setResult(Activity.RESULT_OK, mData);
                     finish();
                 }

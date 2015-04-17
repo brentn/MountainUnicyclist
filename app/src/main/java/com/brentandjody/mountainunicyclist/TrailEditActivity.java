@@ -84,13 +84,15 @@ public class TrailEditActivity extends ActionBarActivity {
 
     private void setupViewFromIntent() {
         Intent intent = getIntent();
-        //build tril object
+        //build trail object
         if (intent.hasExtra("trail"))
             trail = intent.getExtras().getParcelable("trail");
         else
             trail = new Trail();
-        if (intent.hasExtra("location"))
-            trail.setLocation((LatLng) intent.getExtras().getParcelable("location"));
+        if (intent.hasExtra("location")) {
+            double[] coords = intent.getDoubleArrayExtra("location");
+            trail.setLocation(new LatLng(coords[0], coords[1]));
+        }
         if (intent.hasExtra("photoid")) {
             String id = intent.getStringExtra("photoid");
             ParseQuery<Photo> query = Photo.getQuery();
@@ -103,6 +105,8 @@ public class TrailEditActivity extends ActionBarActivity {
            });
         };
         name.setText(trail.Name());
+        if (trail.Difficulty()==null)
+            trail.setDifficulty(Trail.Difficulty.MEDIUM);
         switch (trail.Difficulty()) {
             case EASY:
                 difficulty.check(R.id.easy);

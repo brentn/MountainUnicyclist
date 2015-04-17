@@ -166,7 +166,7 @@ public class MainActivity extends ActionBarActivity {
                             intent.putExtra("photoid", photo.ID());
                         }
                         mAdapter.notifyDataSetChanged();
-                        intent.putExtra("location", data.getExtras().getParcelable("location"));
+                        intent.putExtra("location", data.getDoubleArrayExtra("location"));
                         startActivity(intent);
                     }
                 }

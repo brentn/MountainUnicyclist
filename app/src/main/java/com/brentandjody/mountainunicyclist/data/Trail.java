@@ -1,10 +1,8 @@
 package com.brentandjody.mountainunicyclist.data;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.brentandjody.mountainunicyclist.R;
 import com.brentandjody.mountainunicyclist.TrailAdapter;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
@@ -16,15 +14,17 @@ import com.parse.ParseQuery;
 import java.util.List;
 import java.util.UUID;
 
-import static com.brentandjody.mountainunicyclist.R.drawable;
-import static com.brentandjody.mountainunicyclist.R.drawable.*;
+import static com.brentandjody.mountainunicyclist.R.drawable.ic_difficult;
+import static com.brentandjody.mountainunicyclist.R.drawable.ic_easy;
+import static com.brentandjody.mountainunicyclist.R.drawable.ic_expert;
+import static com.brentandjody.mountainunicyclist.R.drawable.ic_medium;
 
 /**
  * Created by brent on 10/04/15.
  */
 @ParseClassName("Trail")
 public class Trail extends ParseObject implements Parcelable {
-    public enum Difficulty {NOT_SET, EASY, MEDIUM, DIFFICULT, EXPERT};
+    public enum Difficulty {NOT_SET, EASY, MEDIUM, DIFFICULT, EXPERT}
     private final int MAX_STARS = 8;
 
     public Trail() {
@@ -33,9 +33,8 @@ public class Trail extends ParseObject implements Parcelable {
         put(DBContract.Trail._ID, in.readString());
         put(DBContract.Trail.COLUMN_NAME, in.readString());
         put(DBContract.Trail.COLUMN_DESCRIPTION, in.readString());
-        double lat = in.readDouble();
-        double lng = in.readDouble();
-        put(DBContract.Trail.COLUMN_LOCATION, new LatLng(lat,lng));
+        put(DBContract.Trail.COLUMN_LAT, in.readDouble());
+        put(DBContract.Trail.COLUMN_LNG, in.readDouble());
         put(DBContract.Trail.COLUMN_DIFFICULTY, Difficulty.values()[in.readInt()]);
         put(DBContract.Trail.COLUMN_RATING, in.readInt());
 //        put(DBContract.Trail.COLUMN_TRAILSYSTEM, in.readValue());
@@ -47,7 +46,8 @@ public class Trail extends ParseObject implements Parcelable {
         put(DBContract.Trail._ID, id);
         put(DBContract.Trail.COLUMN_NAME, name);
         put(DBContract.Trail.COLUMN_DESCRIPTION, description);
-        put(DBContract.Trail.COLUMN_LOCATION, location);
+        put(DBContract.Trail.COLUMN_LAT, location.latitude);
+        put(DBContract.Trail.COLUMN_LNG, location.longitude);
         put(DBContract.Trail.COLUMN_DIFFICULTY, difficulty);
         put(DBContract.Trail.COLUMN_RATING, rating);
         put(DBContract.Trail.COLUMN_TRAILSYSTEM, trailsystem);
@@ -66,23 +66,37 @@ public class Trail extends ParseObject implements Parcelable {
     }
     public void setName(String name) { put(DBContract.Trail.COLUMN_NAME, name);}
     public void setDescription(String description) { put(DBContract.Trail.COLUMN_DESCRIPTION, description); }
-    public void setLocation(LatLng location) { put(DBContract.Trail.COLUMN_LOCATION, location); }
+    public void setLocation(LatLng location) {
+        if (location==null) return;
+        put(DBContract.Trail.COLUMN_LAT, location.latitude);
+        put(DBContract.Trail.COLUMN_LNG, location.longitude);
+    }
     public void setRating(int rating) {
         if (rating < 0) return;
         if (rating > MAX_STARS) rating=MAX_STARS;
         put(DBContract.Trail.COLUMN_RATING, rating);
     }
-    public void setDifficulty(Difficulty difficulty) { put(DBContract.Trail.COLUMN_DIFFICULTY, difficulty);}
-    public void setTrailsystem(ParseObject trailsystem) { put(DBContract.Trail.COLUMN_TRAILSYSTEM, trailsystem);}
-    public void setPhoto(Photo photo) { put(DBContract.Trail.COLUMN_PHOTO, photo);}
+    public void setDifficulty(Difficulty difficulty) { put(DBContract.Trail.COLUMN_DIFFICULTY, difficulty.ordinal());}
+    public void setTrailsystem(ParseObject trailsystem) {
+        if (trailsystem==null) return;
+        put(DBContract.Trail.COLUMN_TRAILSYSTEM, trailsystem);
+    }
+    public void setPhoto(Photo photo) {
+        if (photo==null) return;
+        put(DBContract.Trail.COLUMN_PHOTO, photo);
+    }
     public void setFlags(int flags) { put(DBContract.Trail._FLAGS, flags);}
 
     public String ID() {return getString(DBContract.Trail._ID);}
     public String Name() {return getString(DBContract.Trail.COLUMN_NAME);}
     public String Description() {return getString(DBContract.Trail.COLUMN_DESCRIPTION);}
-    public LatLng Location() {return (LatLng) get(DBContract.Trail.COLUMN_LOCATION);}
+    public LatLng Location() {
+        double lat = getDouble(DBContract.Trail.COLUMN_LAT);
+        double lng = getDouble(DBContract.Trail.COLUMN_LNG);
+        return new LatLng(lat, lng);
+    }
     public int Rating() {return getInt(DBContract.Trail.COLUMN_RATING);}
-    public Difficulty Difficulty() {return (Difficulty) get(DBContract.Trail.COLUMN_DIFFICULTY);}
+    public Difficulty Difficulty() {return Difficulty.values()[getInt(DBContract.Trail.COLUMN_DIFFICULTY)];}
     public Trailsystem Trailsystem() {return (Trailsystem) get(DBContract.Trail.COLUMN_TRAILSYSTEM);}
     public Photo Photo() {return (Photo) get(DBContract.Trail.COLUMN_PHOTO);}
     public int FLAGS() {return getInt(DBContract.Trail._FLAGS);}
@@ -136,7 +150,9 @@ public class Trail extends ParseObject implements Parcelable {
         dest.writeString(getString(DBContract.Trail._ID));
         dest.writeString(getString(DBContract.Trail.COLUMN_NAME));
         dest.writeString(getString(DBContract.Trail.COLUMN_DESCRIPTION));
-        LatLng location = (LatLng) get(DBContract.Trail.COLUMN_LOCATION);
+        double lat = getDouble(DBContract.Trail.COLUMN_LAT);
+        double lng = getDouble(DBContract.Trail.COLUMN_LNG);
+        LatLng location = new LatLng(lat, lng);
         dest.writeDouble(location.latitude);
         dest.writeDouble(location.longitude);
         Difficulty difficulty = (Difficulty) get(DBContract.Trail.COLUMN_DIFFICULTY);
