@@ -1,14 +1,11 @@
 package com.brentandjody.mountainunicyclist;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -73,7 +70,7 @@ public class TrailActivity extends ActionBarActivity {
     private void populateFields() {
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();
-        query.whereEqualTo(DBContract.Photos._ID, mTrail.PhotoId());
+        query.whereEqualTo(Photo.ID, mTrail.PhotoId());
         query.getFirstInBackground(new GetCallback<Photo>() {
             @Override
             public void done(Photo photo, ParseException e) {
@@ -90,7 +87,7 @@ public class TrailActivity extends ActionBarActivity {
 
     private void setupPhotoPicker() {
         ParseQuery<Photo> query = Photo.getQuery();
-        query.whereEqualTo(DBContract.Photos.COLUMN_OWNER_ID, mTrail.ID());
+        query.whereEqualTo(Photo.OWNER_ID, mTrail.ID());
         query.findInBackground(new FindCallback<Photo>() {
             @Override
             public void done(List<Photo> photos, ParseException e) {

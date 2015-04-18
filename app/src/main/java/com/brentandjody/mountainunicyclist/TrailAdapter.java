@@ -91,7 +91,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         //indirect values
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();
-        query.whereEqualTo(DBContract.Photos._ID, trail.PhotoId());
+        query.whereEqualTo(Photo.ID, trail.PhotoId());
         query.getFirstInBackground(new GetCallback<Photo>() {
             @Override
             public void done(Photo photo, ParseException e) {

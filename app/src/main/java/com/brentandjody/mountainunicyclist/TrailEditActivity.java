@@ -1,5 +1,6 @@
 package com.brentandjody.mountainunicyclist;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -20,6 +21,7 @@ import android.widget.RatingBar;
 import android.widget.Spinner;
 
 import com.brentandjody.mountainunicyclist.data.DBContract;
+import com.brentandjody.mountainunicyclist.data.Flags;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.google.android.gms.maps.model.LatLng;
@@ -27,11 +29,15 @@ import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.util.List;
 
 
 public class TrailEditActivity extends ActionBarActivity {
+
+    private static LinearLayout.LayoutParams unselected = new LinearLayout.LayoutParams(96, LinearLayout.LayoutParams.WRAP_CONTENT);
+    private static LinearLayout.LayoutParams selected = new LinearLayout.LayoutParams(128, LinearLayout.LayoutParams.WRAP_CONTENT);
 
     private Trail mTrail = null;
     private EditText name;
@@ -75,8 +81,7 @@ public class TrailEditActivity extends ActionBarActivity {
         } else {
             Log.i("TrailEdit", "Creating a new trail");
             mTrail = new Trail();
-            mTrail.setID();
-            mTrail.setRating(4);
+            mTrail.setDefaults();
             setupViews();
         }
 
@@ -107,16 +112,6 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail.setDescription(description.getText().toString());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
-            // update missing trailid on photo (not always necessary)
-            ParseQuery<Photo> query =  Photo.getQuery();
-            query.fromLocalDatastore();
-            query.whereEqualTo(DBContract.Photos._ID, mTrail.PhotoId());
-            query.getFirstInBackground(new GetCallback<Photo>() {
-                @Override
-                public void done(Photo photo, ParseException e) {
-                    photo.setOwnerId(mTrail.ID());
-                }
-            });
         }
         mTrail.pinInBackground();
         mTrail.saveEventually();
@@ -135,18 +130,16 @@ public class TrailEditActivity extends ActionBarActivity {
         if (intent.hasExtra("location")) {
             mTrail.setLocation((LatLng) intent.getParcelableExtra("location"));
         }
-        if (intent.hasExtra("photoid")) {
-            ParseQuery<Photo> query = Photo.getQuery();
-            query.fromLocalDatastore();
-            query.whereEqualTo(DBContract.Photos._ID, intent.getStringExtra("photoid"));
-            query.getFirstInBackground(new GetCallback<Photo>() {
-                public void done(Photo photo, ParseException e) {
-                if (e==null)
-                    mTrail.setPhotoId(photo.ID());
-                else
-                    Log.w("TrailEdit", "SetPhotoId failed: " + e.getMessage());
-                }
-           });
+        if (intent.hasExtra("photo")) {
+            byte[] image = intent.getByteArrayExtra("photo");
+            Photo photo = new Photo(image);
+            photo.setOwnerId(mTrail.ID());
+            mTrail.setPhotoId(photo.ID());
+            if (intent.hasExtra("isTemporaryPhoto")) photo.FLAGS().setTemporary();
+            setupPhotoPicker();
+            addImageToPhotoPicker(image, photo.ID());
+            photo.pinInBackground();
+            photo.saveEventually();
         }
         name.setText(mTrail.Name());
         if (mTrail.Difficulty()==null) mTrail.setDifficulty(Trail.Difficulty.MEDIUM);
@@ -155,7 +148,6 @@ public class TrailEditActivity extends ActionBarActivity {
         description.setText(mTrail.Description());
         setupButtonListeners();
         setupTrailsystem();
-        setupPhotoPicker();
     }
 
     private void setupButtonListeners() {
@@ -181,42 +173,61 @@ public class TrailEditActivity extends ActionBarActivity {
 
     private void setupPhotoPicker() {
         ParseQuery<Photo> query = Photo.getQuery();
-        query.whereEqualTo(DBContract.Photos.COLUMN_OWNER_ID, mTrail.ID());
+        query.whereEqualTo(Photo.OWNER_ID, mTrail.ID());
         query.findInBackground(new FindCallback<Photo>() {
             @Override
             public void done(List<Photo> photos, ParseException e) {
-                if (e != null)
-                    Log.w("SetupPhotoPicker()", e.getMessage());
-                for (Photo photo : photos) {
-                    ImageView iv = new ImageView(getApplication());
-                    iv.setTag(0, photo.ID());
-                    if (mTrail.PhotoId() == photo.ID()) {
-                        markSelected(iv);
-                    } else {
-                        iv.setMaxHeight(96);
-                    }
-                    iv.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            markSelected((ImageView) v);
-                            mTrail.setPhotoId((String)v.getTag(0));
+                if (e == null) {
+                    Log.d("SetupPhotoPicker()", "started");
+                    for (Photo photo : photos) {
+                        ImageView iv = new ImageView(getApplication());
+                        iv.setTag(photo.ID());
+                        if (mTrail.PhotoId() == photo.ID()) {
+                            markSelected(iv);
+                        } else {
+                            iv.setLayoutParams(unselected);
                         }
-                    });
-                    photo.LoadData(iv);
-                    photo_picker.addView(iv);
+                        iv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                markSelected((ImageView) v);
+                                mTrail.setPhotoId((String) v.getTag());
+                            }
+                        });
+                        photo.LoadData(iv);
+                        photo_picker.addView(iv);
+                    }
+                } else {
+                    Log.w("PhotoPicker", e.getMessage());
                 }
 
             }
         });
     }
 
+    private void addImageToPhotoPicker(byte[] image, String id) {
+        ImageView iv = new ImageView(getApplication());
+        iv.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
+        iv.setTag(id);
+        if (mTrail.PhotoId() == id) {
+            markSelected(iv);
+        }
+        iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                markSelected((ImageView) v);
+                mTrail.setPhotoId((String) v.getTag());
+            }
+        });
+        photo_picker.addView(iv);
+        photo_picker.getParent().requestLayout();
+    }
+
     private void markSelected(ImageView iv) {
         for (int i = 0; i<photo_picker.getChildCount(); i++) {
-            ((ImageView)photo_picker.getChildAt(i)).setMaxHeight(96);
-            (photo_picker.getChildAt(i)).setBackgroundColor(Color.TRANSPARENT);
+            ((ImageView)photo_picker.getChildAt(i)).setLayoutParams(unselected);
         }
-        iv.setMaxHeight(128);
-        iv.setBackgroundColor(Color.YELLOW);
+        iv.setLayoutParams(selected);
     }
 
     @Override

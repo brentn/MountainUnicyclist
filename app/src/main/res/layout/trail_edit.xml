@@ -187,8 +187,9 @@
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="96dp"
-                android:id="@+id/photo_picker" >
+                android:layout_height="128dp"
+                android:id="@+id/photo_picker"
+                android:measureAllChildren="false">
 
                 <LinearLayout
                     android:orientation="horizontal"

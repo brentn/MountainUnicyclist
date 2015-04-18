@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.brentandjody.mountainunicyclist.data.DBContract;
+import com.brentandjody.mountainunicyclist.data.Flags;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.melnykov.fab.FloatingActionButton;
@@ -193,12 +194,8 @@ public class MainActivity extends ActionBarActivity {
                     if (resultCode == RESULT_OK) {
                         Intent intent = new Intent (getActivity(), TrailEditActivity.class);
                         if (data.hasExtra("map_screenshot")) {
-                            byte[] image = data.getByteArrayExtra("map_screenshot");
-                            Photo photo = new Photo(image);
-                            photo.setFLAGS(DBContract.setTemporary(photo.FLAGS()));
-                            photo.pinInBackground();
-                            photo.saveEventually();
-                            intent.putExtra("photoid", photo.ID());
+                            intent.putExtra("photo", data.getByteArrayExtra("map_screenshot"));
+                            intent.putExtra("isTemporaryPhoto", true);
                         }
                         if (intent.hasExtra("location"))
                             intent.putExtra("location", data.getParcelableExtra("location"));

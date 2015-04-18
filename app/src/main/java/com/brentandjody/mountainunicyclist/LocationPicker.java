@@ -53,7 +53,7 @@ public class LocationPicker extends FragmentActivity {
             };
             mMap.snapshot(callback);
         } else {
-            finish();
+            super.onBackPressed();
         }
     }
 

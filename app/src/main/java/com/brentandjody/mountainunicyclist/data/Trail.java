@@ -31,6 +31,11 @@ public class Trail extends ParseObject {
 
     public static ParseQuery<Trail> getQuery() { return ParseQuery.getQuery(Trail.class); }
 
+    public void setDefaults() {
+        setID();
+        setDifficulty(Difficulty.MEDIUM);
+        setRating(MAX_STARS/2);
+    }
     public void setID() {
         UUID uuid = UUID.randomUUID();
         put(DBContract.Trail._UID, uuid.toString());

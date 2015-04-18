@@ -1,6 +1,5 @@
 package com.brentandjody.mountainunicyclist.data;
 
-
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
@@ -21,6 +20,11 @@ import java.util.UUID;
  */
 @ParseClassName("Photo")
 public class Photo extends ParseObject {
+    public static final String ID = "photoid";
+    public static final String OWNER_ID = "ownerid";
+    public static final String DOMINANT_COLOR = "dominantcolor";
+    public static final String IMAGE_DATA = "data";
+    private static final String FLAGS = "flags";
 
     public Photo() {}
     public Photo(byte[] data) {
@@ -28,22 +32,22 @@ public class Photo extends ParseObject {
         setData(data);
     }
 
-    public static ParseQuery<Photo> getQuery() {
-        return ParseQuery.getQuery(Photo.class);
-    }
+    public static ParseQuery<Photo> getQuery() { return ParseQuery.getQuery(Photo.class); }
 
     public void setID() {
         UUID uuid = UUID.randomUUID();
-        put(DBContract.Photos._UID, uuid.toString());
+        put(ID, uuid.toString());
     }
-    public void setFLAGS(int flags) { put(DBContract.Photos._FLAGS, flags);}
+    public void setFLAGS(Flags flags) {
+        put(FLAGS, flags.toInt());
+    }
     public void setOwnerId(String owner) {
         if (owner==null) return;
-        put(DBContract.Photos.COLUMN_OWNER_ID, owner);
+        put(OWNER_ID, owner);
     }
     public void setDominantColor(String color) {
         if (color==null) return;
-        put(DBContract.Photos.COLUMN_DOMINANT_COLOR, color);
+        put(DOMINANT_COLOR, color);
     }
     public void setData(byte[] data) {
         if (data==null) return;
@@ -52,30 +56,31 @@ public class Photo extends ParseObject {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    put(DBContract.Photos.COLUMN_IMAGE_ID, file);
-                    Log.d("setData", "image saved");
+                    put(ID, file);
+                    Log.d("setPhotoData", "image saved");
                 } else {
-                    Log.w("setData", e.getMessage());
+                    Log.w("setPhotoData", e.getMessage());
                 }
             }
         });
 
     }
 
-    public String ID() { return getString(DBContract.Photos._UID); }
-    public int FLAGS() { return getInt(DBContract.Photos._FLAGS); }
-    public String OwnerId() { return getString(DBContract.Photos.COLUMN_OWNER_ID); }
-    public String DominantColor() { return getString(DBContract.Photos.COLUMN_DOMINANT_COLOR);}
+    public String ID() { return getString(ID); }
+    public Flags FLAGS() { return new Flags(getInt(FLAGS)); }
+    public String OwnerId() { return getString(OWNER_ID); }
+    public String DominantColor() { return getString(DOMINANT_COLOR);}
     public void LoadData(final ImageView imageView) {
-        ParseFile file = (ParseFile) get(DBContract.Photos.COLUMN_DATA);
+        ParseFile file = (ParseFile) get(IMAGE_DATA);
         if (file==null) return;
         file.getDataInBackground(new GetDataCallback() {
             @Override
             public void done(byte[] bytes, ParseException e) {
                 if (e==null) {
                     imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    Log.d("LoadPhotoData", "successful");
                 } else {
-                    Log.w("LoadData", e.getMessage());
+                    Log.w("LoadPhotoData", e.getMessage());
                 }
             }
         });
@@ -84,11 +89,12 @@ public class Photo extends ParseObject {
     public static void Load(String id, final ImageView imageView) {
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();
-        query.whereEqualTo(DBContract.Photos._UID, id);
+        query.whereEqualTo(ID, id);
         query.getFirstInBackground(new GetCallback<Photo>() {
             public void done(Photo photo, ParseException e) {
                 if (e == null) {
                     photo.LoadData(imageView);
+                    Log.d("LoadPhoto", "success");
                 } else {
                     Log.w("LoadPhoto", e.getMessage());
                 }
@@ -96,21 +102,17 @@ public class Photo extends ParseObject {
         });
     }
 
-    public void Delete() {
-        deleteEventually();
-    }
-    public static void Delete(Photo photo) {
-        photo.deleteEventually();
-    }
     public static void Delete(String id) {
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();
-        query.whereEqualTo(DBContract.Photos._UID, id);
+        query.whereEqualTo(ID, id);
         query.getFirstInBackground(new GetCallback<Photo>() {
             @Override
             public void done(Photo photo, ParseException e) {
-            if (e == null && photo!=null);
-                photo.deleteEventually();
+            if (e == null)
+                if (photo!=null) photo.deleteEventually();
+            else
+                Log.w("DeletePhoto", e.getMessage());
             }
         });
     }
