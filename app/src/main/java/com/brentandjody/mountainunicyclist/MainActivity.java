@@ -180,7 +180,7 @@ public class MainActivity extends ActionBarActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent locationPickerIntent = new Intent(getActivity(), LocationPickerActivity.class);
+                    Intent locationPickerIntent = new Intent(getActivity(), LocationPicker.class);
                     startActivityForResult(locationPickerIntent, Application.NEW_LOCATION);
                 }
             });
@@ -193,12 +193,15 @@ public class MainActivity extends ActionBarActivity {
                 case Application.NEW_LOCATION: {
                     if (resultCode == RESULT_OK) {
                         final Intent intent = new Intent (getActivity(), TrailEditActivity.class);
+                        if (data.hasExtra("location"))
+                            intent.putExtra("location", data.getParcelableExtra("location"));
+                        else
+                            intent.putExtra("location", LocationHelper.getGPS(getActivity()) );
                         if (data.hasExtra("map_screenshot")) {
                             byte[] image = data.getByteArrayExtra("map_screenshot");
                             Photo photo = new Photo(image);
                             photo.setFLAGS(DBContract.setTemporary(photo.FLAGS()));
                             intent.putExtra("photoid", photo.ID());
-                            intent.putExtra("location", data.getParcelableExtra("location"));
                             photo.pinInBackground(new SaveCallback() {
                                 @Override
                                 public void done(ParseException e) {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,7 +17,7 @@ import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback;
 
 import java.io.ByteArrayOutputStream;
 
-public class LocationPickerActivity extends FragmentActivity {
+public class LocationPicker extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker mMarker = null;
@@ -25,7 +26,7 @@ public class LocationPickerActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location_picker);
+        setContentView(R.layout.location_picker);
         setUpMapIfNeeded();
     }
 
@@ -46,12 +47,14 @@ public class LocationPickerActivity extends FragmentActivity {
                     mData.putExtra("map_screenshot", bs.toByteArray());
                     mData.putExtra("location", mMarker.getPosition());
                     setResult(Activity.RESULT_OK, mData);
+                    Log.d("LocationPicker", "finished");
                     finish();
                 }
             };
             mMap.snapshot(callback);
-        };
-        //super.onBackPressed();
+        } else {
+            finish();
+        }
     }
 
     /**
@@ -114,7 +117,7 @@ public class LocationPickerActivity extends FragmentActivity {
 //            @Override
 //            public boolean onMarkerClick(Marker marker) {
 //                final Marker _marker = marker;
-//                new AlertDialog.Builder(LocationPickerActivity.this)
+//                new AlertDialog.Builder(LocationPicker.this)
 //                        .setTitle("Confirm:")
 //                        .setMessage("Is this the location of the Trail Head?")
 //                        .setIcon(android.R.drawable.ic_dialog_map)
