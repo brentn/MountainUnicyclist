@@ -35,7 +35,8 @@ public class Photo extends ParseObject {
     private byte[] mData = null;
     private Flags  mFlags = new Flags();
 
-    public Photo() {}
+    public Photo() {
+    }
 
     public static ParseQuery<Photo> getQuery() { return ParseQuery.getQuery(Photo.class); }
 
@@ -83,8 +84,8 @@ public class Photo extends ParseObject {
             });
         }
     }
-    public void Load(String id) {
-        Load(id, new GetDataCallback() {
+    public void Load(String photo_id) {
+        Load(photo_id, new GetDataCallback() {
             @Override
             public void done(byte[] bytes, ParseException e) {
                 if (e == null) {

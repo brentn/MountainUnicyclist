@@ -50,20 +50,16 @@ public class TrailActivity extends ActionBarActivity {
         commentsButton = (TextView) findViewById(R.id.add_comment_button);
         ridesButton = (TextView) findViewById(R.id.rides_button);
         featuresButton = (TextView) findViewById(R.id.features_button);
+        mTrail = new Trail();
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
-            ParseQuery<Trail> query = Trail.getQuery();
-            query.fromLocalDatastore();
-            query.whereEqualTo(DBContract.Trail._ID, intent.getStringExtra("trailId"));
-            query.getFirstInBackground(new GetCallback<Trail>() {
+            mTrail.Load(intent.getStringExtra("trailId"), new GetCallback<Trail>() {
                 @Override
                 public void done(Trail trail, ParseException e) {
-                if (e==null) {
-                    mTrail = trail;
-                    populateFields();
-                } else {
-                    Log.w("Error loading trail", e.getMessage() );
-                }
+                    if (e==null) {
+                        Log.d("TrailActivity", "trail loaded");
+                        populateFields();
+                    } else Log.w("TrailActivity", e.getMessage());
                 }
             });
         }
@@ -80,8 +76,8 @@ public class TrailActivity extends ActionBarActivity {
             }
         });
         name.setText(mTrail.Name());
-        difficulty.setImageResource(mTrail.getDifficultyIcon());
-        rating.setText(mTrail.getStars());
+        difficulty.setImageResource(mTrail.Difficulty().Icon());
+        rating.setText(mTrail.Stars());
         description.setText(mTrail.Description());
         //TODO:trailsystem
         setupPhotoPicker();

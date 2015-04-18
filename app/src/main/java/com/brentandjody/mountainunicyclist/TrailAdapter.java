@@ -13,15 +13,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.GetCallback;
+import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
 
 import java.util.List;
 
@@ -66,12 +64,22 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     public TrailAdapter(Context context) {
         mContext = context;
         mDataset = null;
+        LoadAllTrails();
         mMyLocation = LocationHelper.getGPS(context);
-
     }
 
-    public void LoadData(List<Trail> dataset) {
-        mDataset = dataset;
+    public void LoadAllTrails() {
+        Trail.LoadAllTrails(new FindCallback<Trail>() {
+            @Override
+            public void done(List<Trail> trails, ParseException e) {
+                if (e==null) {
+                    mDataset = trails;
+                    TrailAdapter.this.notifyDataSetChanged();
+                    Log.d("LoadAllTrails", "succeeded");
+                } else Log.w("LoadAllTrails", e.getMessage());
+
+            }
+        });
     }
 
     @Override
@@ -99,23 +107,23 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
                 } else Log.w("TrailAdapter", e.getMessage());
             }
         });
-        int resID = trail.getDifficultyIcon();
-        if (resID >=0) holder.mDifficulty.setImageResource(resID);
-        else holder.mDifficulty.setImageResource(0);
+        holder.mDifficulty.setImageResource(trail.Difficulty().Resource());
         String trailsystem = "No trailsystem"; //TODO:lookup trailsystem
         holder.mTrailsystem.setText(trailsystem);
 
         //calculated or processed values
         int rating = trail.Rating(); //TODO: this should take into consideration ride ratings
-        holder.mRating.setText(trail.getStars());
+        holder.mRating.setText(trail.Stars());
         float[] result = new float[3];
-        Location.distanceBetween(mMyLocation.latitude,
-                mMyLocation.longitude,
-                trail.Location().latitude,
-                trail.Location().longitude,
-                result);
-        float distance = result[0]/10;
-        holder.mDistance.setText("approx. "+String.format("%.1f", distance)+ " km. away");
+        if (mMyLocation!=null && trail.Location()!=null) {
+            Location.distanceBetween(mMyLocation.latitude,
+                    mMyLocation.longitude,
+                    trail.Location().latitude,
+                    trail.Location().longitude,
+                    result);
+            float distance = result[0] / 10;
+            holder.mDistance.setText("approx. " + String.format("%.1f", distance) + " km. away");
+        } else holder.mDistance.setText("");
         holder.mRideStats.setText("Rides: 0/0");
         holder.mEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override

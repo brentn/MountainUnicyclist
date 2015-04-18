@@ -21,13 +21,15 @@ import android.widget.RatingBar;
 import android.widget.Spinner;
 
 import com.brentandjody.mountainunicyclist.data.DBContract;
-import com.brentandjody.mountainunicyclist.data.Flags;
+import com.brentandjody.mountainunicyclist.data.Difficulty;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
@@ -64,24 +66,20 @@ public class TrailEditActivity extends ActionBarActivity {
         okButton = (Button) findViewById(R.id.ok_button);
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
-            ParseQuery<Trail> query = Trail.getQuery();
-            query.fromLocalDatastore();
-            query.whereEqualTo(DBContract.Trail._ID, intent.getStringExtra("trailId"));
-            query.getFirstInBackground(new GetCallback<Trail>() {
+            mTrail = new Trail();
+            mTrail.Load(intent.getStringExtra("trailId"), new GetCallback<Trail>() {
                 @Override
                 public void done(Trail trail, ParseException e) {
-                    if (e == null) {
+                    if (e==null) {
                         mTrail = trail;
+                        Log.d("EditTrail", "Trail loaded");
                         setupViews();
-                    } else {
-                        Log.w("Load Trail", e.getMessage());
-                    }
+                    } else Log.w("EditTrail", e.getMessage());
                 }
             });
         } else {
             Log.i("TrailEdit", "Creating a new trail");
             mTrail = new Trail();
-            mTrail.setDefaults();
             setupViews();
         }
 
@@ -98,23 +96,22 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail.setName(name.getText().toString());
             switch (difficulty.getCheckedRadioButtonId()) {
                 case R.id.easy:
-                    mTrail.setDifficulty(Trail.Difficulty.EASY); break;
+                    mTrail.setDifficulty(new Difficulty(0)); break;
                 case R.id.medium:
-                    mTrail.setDifficulty(Trail.Difficulty.MEDIUM); break;
+                    mTrail.setDifficulty(new Difficulty(1)); break;
                 case R.id.difficult:
-                    mTrail.setDifficulty(Trail.Difficulty.DIFFICULT); break;
+                    mTrail.setDifficulty(new Difficulty(2)); break;
                 case R.id.expert:
-                    mTrail.setDifficulty(Trail.Difficulty.EXPERT); break;
+                    mTrail.setDifficulty(new Difficulty(3)); break;
                 default:
-                    mTrail.setDifficulty(Trail.Difficulty.MEDIUM);
+                    mTrail.setDifficulty(new Difficulty());
             }
             mTrail.setRating(Math.round(rating.getRating()));
             mTrail.setDescription(description.getText().toString());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
         }
-        mTrail.pinInBackground();
-        mTrail.saveEventually();
+        mTrail.Save();
         setResult(Activity.RESULT_OK);
         finish();
     }
@@ -142,8 +139,7 @@ public class TrailEditActivity extends ActionBarActivity {
             photo.Save();
         }
         name.setText(mTrail.Name());
-        if (mTrail.Difficulty()==null) mTrail.setDifficulty(Trail.Difficulty.MEDIUM);
-        difficulty.check(mTrail.getDifficultyResource());
+        difficulty.check(mTrail.Difficulty().Resource());
         rating.setRating(mTrail.Rating());
         description.setText(mTrail.Description());
         setupButtonListeners();

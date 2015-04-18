@@ -15,18 +15,6 @@ public class DBContract {
         public static final String COLUMN_PHOTO = "photoid";
     }
 
-    public static final class Trail implements IBaseColumns {
-        public static final String TABLE_NAME = "trails";
-        public static final String COLUMN_TRAILSYSTEM = "trailsystemid";
-        public static final String COLUMN_NAME = "name";
-        public static final String COLUMN_DESCRIPTION = "description";
-        public static final String COLUMN_LAT = "latitude";
-        public static final String COLUMN_LNG = "longitude";
-        public static final String COLUMN_PHOTO = "photoId";
-        public static final String COLUMN_DIFFICULTY = "difficulty";
-        public static final String COLUMN_RATING = "rating";
-    }
-
     public static final class Feature implements IBaseColumns {
         public static final String TABLE_NAME = "features";
         public static final String COLUMN_TRAIL = "trailid";

@@ -40,13 +40,13 @@ public class LocationPicker extends FragmentActivity {
     @Override
     public void onBackPressed() {
         if (mMarker!=null) {
+            mData.putExtra("location", mMarker.getPosition());
             SnapshotReadyCallback callback = new SnapshotReadyCallback() {
                 @Override
                 public void onSnapshotReady(Bitmap snapshot) {
                     ByteArrayOutputStream bs = new ByteArrayOutputStream();
                     snapshot.compress(Bitmap.CompressFormat.PNG, 50, bs);
                     mData.putExtra("map_screenshot", bs.toByteArray());
-                    mData.putExtra("location", mMarker.getPosition());
                     setResult(Activity.RESULT_OK, mData);
                     finish();
                 }

@@ -173,7 +173,6 @@ public class MainActivity extends ActionBarActivity {
             mLayoutManager = new LinearLayoutManager(getActivity());
             mRecyclerView.setLayoutManager(mLayoutManager);
             mAdapter = new TrailAdapter(getActivity());
-            Trail.LoadTrailAdapter(mAdapter);
             mRecyclerView.setAdapter(mAdapter);
             FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
             fab.attachToRecyclerView(mRecyclerView);
@@ -190,22 +189,22 @@ public class MainActivity extends ActionBarActivity {
 
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             switch (requestCode) {
-                case Application.NEW_LOCATION: {
+                case Application.NEW_LOCATION:
                     if (resultCode == RESULT_OK) {
                         Intent intent = new Intent (getActivity(), TrailEditActivity.class);
                         if (data.hasExtra("map_screenshot")) {
                             intent.putExtra("photo", data.getByteArrayExtra("map_screenshot"));
                             intent.putExtra("isTemporaryPhoto", true);
                         }
-                        if (intent.hasExtra("location"))
+                        if (data.hasExtra("location"))
                             intent.putExtra("location", data.getParcelableExtra("location"));
                         startActivity(intent);
                     }
-                }
-                case Application.EDIT_TRAIL: {
+                break;
+                case Application.EDIT_TRAIL:
                     if (resultCode == RESULT_OK) {
-                        Trail.LoadTrailAdapter(mAdapter);
-                    }
+                        mAdapter.LoadAllTrails();
+                    break;
                 }
             }
         }
