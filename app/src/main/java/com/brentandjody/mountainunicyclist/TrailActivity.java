@@ -1,6 +1,7 @@
 package com.brentandjody.mountainunicyclist;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
@@ -68,13 +70,13 @@ public class TrailActivity extends ActionBarActivity {
     }
 
     private void populateFields() {
-        ParseQuery<Photo> query = Photo.getQuery();
-        query.fromLocalDatastore();
-        query.whereEqualTo(Photo.ID, mTrail.PhotoId());
-        query.getFirstInBackground(new GetCallback<Photo>() {
+        Photo.LoadImage(mTrail.PhotoId(), new GetDataCallback() {
             @Override
-            public void done(Photo photo, ParseException e) {
-                photo.LoadData(feature_photo);
+            public void done(byte[] bytes, ParseException e) {
+                if (e==null) {
+                    feature_photo.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    Log.d("PopulateTrail", "feature photo loaded");
+                } else Log.w("PopulateTrail", e.getMessage());
             }
         });
         name.setText(mTrail.Name());
@@ -86,20 +88,17 @@ public class TrailActivity extends ActionBarActivity {
     }
 
     private void setupPhotoPicker() {
-        ParseQuery<Photo> query = Photo.getQuery();
-        query.whereEqualTo(Photo.OWNER_ID, mTrail.ID());
-        query.findInBackground(new FindCallback<Photo>() {
+        Photo.LoadImagesForOwner(mTrail.ID(), new FindCallback<Photo>() {
             @Override
             public void done(List<Photo> photos, ParseException e) {
-                if (e!=null)
-                    Log.w("SetupPhotoPicker()", e.getMessage());
-                for (Photo photo : photos) {
-                    ImageView iv = new ImageView(getApplication());
-                    iv.setMaxHeight(96);
-                    photo.LoadData(iv);
-                    photo_picker.addView(iv);
-                }
-
+                if (e==null) {
+                    for (Photo photo : photos) {
+                        ImageView iv = new ImageView(getApplication());
+                        iv.setMaxHeight(96);
+                        photo.LoadInto(iv);
+                        photo_picker.addView(iv);
+                    }
+                } else Log.w("SetupPhotoPicker()", e.getMessage());
             }
         });
     }

@@ -19,6 +19,7 @@ import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
@@ -89,16 +90,13 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         holder.mDescription.setText(trail.Description());
         holder.mPhoto.setImageBitmap(null);
         //indirect values
-        ParseQuery<Photo> query = Photo.getQuery();
-        query.fromLocalDatastore();
-        query.whereEqualTo(Photo.ID, trail.PhotoId());
-        query.getFirstInBackground(new GetCallback<Photo>() {
+        Photo.LoadImage(trail.PhotoId(), new GetDataCallback() {
             @Override
-            public void done(Photo photo, ParseException e) {
-                if (e==null)
-                    photo.LoadData(featured_image);
-                else
-                    Log.w("TrailAdapter", e.getMessage());
+            public void done(byte[] bytes, ParseException e) {
+                if (e==null) {
+                    featured_image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    Log.d("TrailAdapter", "featured image loaded");
+                } else Log.w("TrailAdapter", e.getMessage());
             }
         });
         int resID = trail.getDifficultyIcon();

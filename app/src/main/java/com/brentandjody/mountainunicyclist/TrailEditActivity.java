@@ -132,14 +132,14 @@ public class TrailEditActivity extends ActionBarActivity {
         }
         if (intent.hasExtra("photo")) {
             byte[] image = intent.getByteArrayExtra("photo");
-            Photo photo = new Photo(image);
+            Photo photo = new Photo();
+            photo.setData(image);
             photo.setOwnerId(mTrail.ID());
             mTrail.setPhotoId(photo.ID());
             if (intent.hasExtra("isTemporaryPhoto")) photo.FLAGS().setTemporary();
             setupPhotoPicker();
             addImageToPhotoPicker(image, photo.ID());
-            photo.pinInBackground();
-            photo.saveEventually();
+            photo.Save();
         }
         name.setText(mTrail.Name());
         if (mTrail.Difficulty()==null) mTrail.setDifficulty(Trail.Difficulty.MEDIUM);
@@ -172,13 +172,10 @@ public class TrailEditActivity extends ActionBarActivity {
     }
 
     private void setupPhotoPicker() {
-        ParseQuery<Photo> query = Photo.getQuery();
-        query.whereEqualTo(Photo.OWNER_ID, mTrail.ID());
-        query.findInBackground(new FindCallback<Photo>() {
+        Photo.LoadImagesForOwner(mTrail.ID(), new FindCallback<Photo>() {
             @Override
             public void done(List<Photo> photos, ParseException e) {
-                if (e == null) {
-                    Log.d("SetupPhotoPicker()", "started");
+                if (e==null) {
                     for (Photo photo : photos) {
                         ImageView iv = new ImageView(getApplication());
                         iv.setTag(photo.ID());
@@ -194,13 +191,9 @@ public class TrailEditActivity extends ActionBarActivity {
                                 mTrail.setPhotoId((String) v.getTag());
                             }
                         });
-                        photo.LoadData(iv);
                         photo_picker.addView(iv);
                     }
-                } else {
-                    Log.w("PhotoPicker", e.getMessage());
-                }
-
+                } else Log.w("SetupPhotoPicker()", e.getMessage());
             }
         });
     }
