@@ -1,5 +1,6 @@
 package com.brentandjody.mountainunicyclist;
 
+import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
@@ -24,7 +25,10 @@ import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.melnykov.fab.FloatingActionButton;
+import com.parse.FindCallback;
 import com.parse.ParseAnonymousUtils;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 
@@ -45,13 +49,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
     }
 
     @Override
@@ -64,10 +66,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Check if we have a real user
-        if (!ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
-            loadFromParse();
-        }
+        loadFromParse();
     }
 
 
@@ -90,13 +89,15 @@ public class MainActivity extends ActionBarActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         if ((ni != null) && (ni.isConnected())) {
-            if (!ParseAnonymousUtils.isLinked(ParseUser.getCurrentUser())) {
-            } else {
-//            // If we have a network connection but no logged in user, direct
-//            // the person to log in or sign up.
-//            ParseLoginBuilder builder = new ParseLoginBuilder(this);
-//            startActivityForResult(builder.build(), LOGIN_ACTIVITY_CODE);
-            }
+            ParseQuery<Trail> query = Trail.getQuery();
+            query.findInBackground(new FindCallback<Trail>() {
+                @Override
+                public void done(List<Trail> trails, ParseException e) {
+                    for (Trail trail : trails) {
+                        trail.pinInBackground();
+                    }
+                }
+            });
         } else {
             //TODO:
         }

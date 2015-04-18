@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -52,17 +55,22 @@ public class TrailActivity extends ActionBarActivity {
             query.getFirstInBackground(new GetCallback<Trail>() {
                 @Override
                 public void done(Trail trail, ParseException e) {
+                if (e==null) {
                     mTrail = trail;
                     populateFields();
+                } else {
+                    Log.w("Error loading trail", e.getMessage() );
+                }
                 }
             });
         }
     }
 
     private void populateFields() {
-        if (mTrail ==null) return;
-        feature_photo.setImageBitmap(
+        if (mTrail!=null && mTrail.Photo()!=null)
+            feature_photo.setImageBitmap(
                 BitmapFactory.decodeByteArray(mTrail.Photo().Data(), 0, mTrail.Photo().Data().length));
+        name.setText(mTrail.Name());
         difficulty.setImageResource(mTrail.getDifficultyIcon());
         rating.setText(mTrail.getStars());
         description.setText(mTrail.Description());

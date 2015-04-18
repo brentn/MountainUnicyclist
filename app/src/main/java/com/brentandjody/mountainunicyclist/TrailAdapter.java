@@ -128,7 +128,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, TrailActivity.class );
                 intent.putExtra("trailId", trail.ID());
-                ((Activity)mContext).startActivityForResult(intent, Application.EDIT_TRAIL);
+                mContext.startActivity(intent);
             }
         });
     }

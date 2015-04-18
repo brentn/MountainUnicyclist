@@ -50,7 +50,6 @@ public class TrailEditActivity extends ActionBarActivity {
         trailsystem = (Spinner) findViewById(R.id.trailsystem);
         photo_picker = (LinearLayout) findViewById(R.id.photos);
         locationButton = (ImageButton) findViewById(R.id.location_picker_button);
-        cancelButton = (Button) findViewById(R.id.cancel_button);
         okButton = (Button) findViewById(R.id.ok_button);
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
@@ -68,6 +67,12 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail = new Trail();
             setupViews();
        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        cancelTrail();
+        super.onBackPressed();
     }
 
     private void saveTrail() {
@@ -101,7 +106,8 @@ public class TrailEditActivity extends ActionBarActivity {
     }
 
     private void cancelTrail() {
-        Photo.Delete(mTrail.Photo().ID());
+        if (mTrail!=null && mTrail.Photo()!=null)
+            Photo.Delete(mTrail.Photo().ID());
         finish();
     }
 

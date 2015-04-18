@@ -90,13 +90,11 @@ public class Trail extends ParseObject {
     public static void LoadTrailAdapter(final TrailAdapter adapter) {
         ParseQuery<Trail> query = ParseQuery.getQuery("Trail");
         query.fromLocalDatastore();
-        Log.d("Trail", "starting Adapter load");
         query.findInBackground(new FindCallback<com.brentandjody.mountainunicyclist.data.Trail>() {
             @Override
             public void done(List<Trail> trails, ParseException e) {
                 adapter.LoadData(trails);
                 adapter.notifyDataSetChanged();
-                Log.d("Trail", "Adapter loaded");
             }
         });
     }
