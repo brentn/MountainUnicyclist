@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.brentandjody.mountainunicyclist.data.Difficulty;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
