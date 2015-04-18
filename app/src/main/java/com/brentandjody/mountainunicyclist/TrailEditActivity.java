@@ -65,8 +65,20 @@ public class TrailEditActivity extends ActionBarActivity {
             });
         } else {
             mTrail = new Trail();
+            mTrail.setRating(4);
             setupViews();
-       }
+        }
+        if (intent.hasExtra("photoId")) {
+            ParseQuery<Photo> query = Photo.getQuery();
+            query.fromLocalDatastore();
+            query.whereEqualTo(DBContract.Photos._ID, intent.getStringExtra("photoId"));
+            query.getFirstInBackground(new GetCallback<Photo>() {
+                @Override
+                public void done(Photo photo, ParseException e) {
+                    mTrail.setPhoto(photo);
+                }
+            });
+        }
     }
 
     @Override
@@ -160,7 +172,7 @@ public class TrailEditActivity extends ActionBarActivity {
         locationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TrailEditActivity.this, LocationPickerActivity.class);
+                Intent intent = new Intent(TrailEditActivity.this, LocationPicker.class);
                 intent.putExtra("location", mTrail.Location());
                 startActivityForResult(intent, Application.EDIT_TRAIL);
             }
