@@ -40,8 +40,5 @@ public class Application extends android.app.Application{
         ParseACL defaultACL = new ParseACL();
         defaultACL.setPublicReadAccess(true);
 		ParseACL.setDefaultACL(defaultACL, true);
-
-
-
     }
 }

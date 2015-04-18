@@ -1,6 +1,5 @@
 package com.brentandjody.mountainunicyclist;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -13,14 +12,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-
-import bolts.Task;
 
 /**
  * Created by brent on 07/04/15.

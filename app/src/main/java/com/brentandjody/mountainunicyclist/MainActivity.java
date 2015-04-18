@@ -179,7 +179,7 @@ public class MainActivity extends ActionBarActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent locationPickerIntent = new Intent(getActivity(), LocationPickerActivity.class);
+                    Intent locationPickerIntent = new Intent(getActivity(), LocationPicker.class);
                     startActivityForResult(locationPickerIntent, Application.NEW_LOCATION);
                 }
             });

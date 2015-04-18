@@ -1,4 +1,4 @@
-package com.brentandjody.mountainunicyclist;
+package com.brentandjody.mountainunicyclist.helpers;
 
 import android.content.Context;
 import android.location.Location;

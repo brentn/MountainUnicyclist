@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -43,7 +44,7 @@ public class LocationPicker extends FragmentActivity {
                 @Override
                 public void onSnapshotReady(Bitmap snapshot) {
                     ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                    snapshot.compress(Bitmap.CompressFormat.PNG, 50, bs);
+                    snapshot.compress(Bitmap.CompressFormat.PNG, 30, bs);
                     mData.putExtra("map_screenshot", bs.toByteArray());
                     mData.putExtra("location", mMarker.getPosition());
                     setResult(Activity.RESULT_OK, mData);

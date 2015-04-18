@@ -14,10 +14,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.brentandjody.mountainunicyclist.data.DBContract;
+import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+
+import java.util.List;
 
 
 public class TrailActivity extends ActionBarActivity {
@@ -79,12 +83,22 @@ public class TrailActivity extends ActionBarActivity {
     }
 
     private void setupPhotoPicker() {
-//        for (Photo photo : Photos.GetPhotosForTrail(mTrail.ID())) {
-//            ImageView iv = new ImageView(this);
-//            iv.setMaxHeight(96);
-//            iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
-//            photo_picker.addView(iv);
-//        }
+        ParseQuery<Photo> query = Photo.getQuery();
+        query.whereEqualTo(DBContract.Photos.COLUMN_OWNER_ID, mTrail.ID());
+        query.findInBackground(new FindCallback<Photo>() {
+            @Override
+            public void done(List<Photo> photos, ParseException e) {
+                if (e!=null)
+                    Log.w("SetupPhotoPicker()", e.getMessage());
+                for (Photo photo : photos) {
+                    ImageView iv = new ImageView(getApplication());
+                    iv.setMaxHeight(96);
+                    iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
+                    photo_picker.addView(iv);
+                }
+
+            }
+        });
     }
 
     @Override

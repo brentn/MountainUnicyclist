@@ -2,6 +2,7 @@ package com.brentandjody.mountainunicyclist;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
@@ -20,9 +22,12 @@ import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+
+import java.util.List;
 
 
 public class TrailEditActivity extends ActionBarActivity {
@@ -35,7 +40,6 @@ public class TrailEditActivity extends ActionBarActivity {
     private Spinner trailsystem;
     private LinearLayout photo_picker;
     private ImageButton locationButton;
-    private Button cancelButton;
     private Button okButton;
 
     @Override
@@ -177,12 +181,6 @@ public class TrailEditActivity extends ActionBarActivity {
                 startActivityForResult(intent, Application.EDIT_TRAIL);
             }
         });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cancelTrail();
-            }
-        });
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,7 +194,22 @@ public class TrailEditActivity extends ActionBarActivity {
     }
 
     private void setupPhotoPicker() {
-    //TODO:
+        ParseQuery<Photo> query = Photo.getQuery();
+        query.whereEqualTo(DBContract.Photos.COLUMN_OWNER_ID, mTrail.ID());
+        query.findInBackground(new FindCallback<Photo>() {
+            @Override
+            public void done(List<Photo> photos, ParseException e) {
+                if (e!=null)
+                    Log.w("SetupPhotoPicker()", e.getMessage());
+                for (Photo photo : photos) {
+                    ImageView iv = new ImageView(getApplication());
+                    iv.setMaxHeight(96);
+                    iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
+                    photo_picker.addView(iv);
+                }
+
+            }
+        });
     }
 
     @Override
