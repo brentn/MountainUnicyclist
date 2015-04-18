@@ -15,12 +15,12 @@ public class DBContract {
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_LOCATION = "location";
-        public static final String COLUMN_PHOTO = "photoId";
+        public static final String COLUMN_PHOTO = "photoid";
     }
 
     public static final class Trail implements IBaseColumns {
         public static final String TABLE_NAME = "trails";
-        public static final String COLUMN_TRAILSYSTEM = "trailsystemId";
+        public static final String COLUMN_TRAILSYSTEM = "trailsystemid";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_LAT = "latitude";
@@ -32,19 +32,20 @@ public class DBContract {
 
     public static final class Feature implements IBaseColumns {
         public static final String TABLE_NAME = "features";
-        public static final String COLUMN_TRAIL = "trailId";
+        public static final String COLUMN_TRAIL = "trailid";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_LAT = "lat";
         public static final String COLUMN_LONG = "long";
-        public static final String COLUMN_PHOTO = "photoId";
+        public static final String COLUMN_PHOTO = "photoid";
     }
 
     public static final class Photos implements IBaseColumns {
         public static final String TABLE_NAME = "photos";
-        public static final String COLUMN_OWNER_TYPE = "ownerType";
-        public static final String COLUMN_OWNER_ID = "ownerId";
-        public static final String COLUMN_DOMINANT_COLOR = "dominantColor";
+        public static final String COLUMN_OWNER_TYPE = "ownertype";
+        public static final String COLUMN_IMAGE_ID = "imageid";
+        public static final String COLUMN_OWNER_ID = "ownerid";
+        public static final String COLUMN_DOMINANT_COLOR = "dominantcolor";
         public static final String COLUMN_DATA = "data";
     }
 

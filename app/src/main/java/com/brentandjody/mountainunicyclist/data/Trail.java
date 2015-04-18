@@ -2,6 +2,7 @@ package com.brentandjody.mountainunicyclist.data;
 
 import android.util.Log;
 
+import com.brentandjody.mountainunicyclist.R;
 import com.brentandjody.mountainunicyclist.TrailAdapter;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
@@ -27,24 +28,8 @@ public class Trail extends ParseObject {
     private final int MAX_STARS = 8;
 
     public Trail() {}
-    public Trail(String id, String name, String description, LatLng location,
-                Difficulty difficulty, int rating, Trailsystem trailsystem, Photo photo, int flags) {
-        put(DBContract.Trail._UID, id);
-        put(DBContract.Trail.COLUMN_NAME, name);
-        put(DBContract.Trail.COLUMN_DESCRIPTION, description);
-        put(DBContract.Trail.COLUMN_LAT, location.latitude);
-        put(DBContract.Trail.COLUMN_LNG, location.longitude);
-        put(DBContract.Trail.COLUMN_DIFFICULTY, difficulty);
-        put(DBContract.Trail.COLUMN_RATING, rating);
-        put(DBContract.Trail.COLUMN_TRAILSYSTEM, trailsystem);
-        put(DBContract.Trail.COLUMN_PHOTO, photo);
-        put(DBContract.Trail._FLAGS, flags);
 
-    }
-
-    public static ParseQuery<Trail> getQuery() {
-        return ParseQuery.getQuery(Trail.class);
-    }
+    public static ParseQuery<Trail> getQuery() { return ParseQuery.getQuery(Trail.class); }
 
     public void setID() {
         UUID uuid = UUID.randomUUID();
@@ -67,10 +52,7 @@ public class Trail extends ParseObject {
         if (trailsystem==null) return;
         put(DBContract.Trail.COLUMN_TRAILSYSTEM, trailsystem);
     }
-    public void setPhoto(Photo photo) {
-        if (photo==null) return;
-        put(DBContract.Trail.COLUMN_PHOTO, photo);
-    }
+    public void setPhotoId(String id) { put(DBContract.Trail.COLUMN_PHOTO, id); }
     public void setFlags(int flags) { put(DBContract.Trail._FLAGS, flags);}
 
     public String ID() {return getString(DBContract.Trail._UID);}
@@ -84,7 +66,7 @@ public class Trail extends ParseObject {
     public int Rating() {return getInt(DBContract.Trail.COLUMN_RATING);}
     public Difficulty Difficulty() {return Difficulty.values()[getInt(DBContract.Trail.COLUMN_DIFFICULTY)];}
     public Trailsystem Trailsystem() {return (Trailsystem) get(DBContract.Trail.COLUMN_TRAILSYSTEM);}
-    public Photo Photo() {return (Photo) get(DBContract.Trail.COLUMN_PHOTO);}
+    public String PhotoId() {return  getString(DBContract.Trail.COLUMN_PHOTO);}
     public int FLAGS() {return getInt(DBContract.Trail._FLAGS);}
 
     public static void LoadTrailAdapter(final TrailAdapter adapter) {
@@ -98,7 +80,16 @@ public class Trail extends ParseObject {
             }
         });
     }
-
+    public int getDifficultyResource() {
+        switch (Difficulty.values()[getInt(DBContract.Trail.COLUMN_DIFFICULTY)]) {
+            case NOT_SET: return -1;
+            case EASY:  return R.id.easy;
+            case MEDIUM:  return R.id.medium;
+            case DIFFICULT: return R.id.difficult;
+            case EXPERT:  return R.id.expert;
+        }
+        return R.id.medium;
+    }
     public int getDifficultyIcon() {
         switch (Difficulty.values()[getInt(DBContract.Trail.COLUMN_DIFFICULTY)]) {
             case NOT_SET:return -1;

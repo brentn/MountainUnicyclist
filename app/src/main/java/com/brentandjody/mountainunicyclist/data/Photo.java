@@ -6,10 +6,13 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.util.UUID;
 
@@ -44,23 +47,48 @@ public class Photo extends ParseObject {
     }
     public void setData(byte[] data) {
         if (data==null) return;
-        put(DBContract.Photos.COLUMN_DATA, data);
+        final ParseFile file = new ParseFile("photo.png", data);
+        file.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    put(DBContract.Photos.COLUMN_IMAGE_ID, file);
+                    Log.d("setData", "image saved");
+                } else {
+                    Log.w("setData", e.getMessage());
+                }
+            }
+        });
+
     }
 
     public String ID() { return getString(DBContract.Photos._UID); }
     public int FLAGS() { return getInt(DBContract.Photos._FLAGS); }
     public String OwnerId() { return getString(DBContract.Photos.COLUMN_OWNER_ID); }
     public String DominantColor() { return getString(DBContract.Photos.COLUMN_DOMINANT_COLOR);}
-    public byte[] Data() { return getBytes(DBContract.Photos.COLUMN_DATA); }
+    public void LoadData(final ImageView imageView) {
+        ParseFile file = (ParseFile) get(DBContract.Photos.COLUMN_DATA);
+        if (file==null) return;
+        file.getDataInBackground(new GetDataCallback() {
+            @Override
+            public void done(byte[] bytes, ParseException e) {
+                if (e==null) {
+                    imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                } else {
+                    Log.w("LoadData", e.getMessage());
+                }
+            }
+        });
+    }
 
-    public static void Load(String id, final ImageView image) {
+    public static void Load(String id, final ImageView imageView) {
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();
         query.whereEqualTo(DBContract.Photos._UID, id);
         query.getFirstInBackground(new GetCallback<Photo>() {
             public void done(Photo photo, ParseException e) {
                 if (e == null) {
-                    image.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
+                    photo.LoadData(imageView);
                 } else {
                     Log.w("LoadPhoto", e.getMessage());
                 }
@@ -81,7 +109,7 @@ public class Photo extends ParseObject {
         query.getFirstInBackground(new GetCallback<Photo>() {
             @Override
             public void done(Photo photo, ParseException e) {
-                if (e == null);
+            if (e == null && photo!=null);
                 photo.deleteEventually();
             }
         });

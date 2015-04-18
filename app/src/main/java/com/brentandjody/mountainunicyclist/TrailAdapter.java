@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +13,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.brentandjody.mountainunicyclist.data.DBContract;
+import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
 
 import java.util.List;
 
@@ -83,16 +89,18 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         holder.mDescription.setText(trail.Description());
         holder.mPhoto.setImageBitmap(null);
         //indirect values
-        if (trail.Photo()!=null) {
-            featured_image.setImageBitmap(
-                    BitmapFactory.decodeByteArray(trail.Photo().Data(), 0, trail.Photo().Data().length));
-        }
-//        Task.callInBackground(new Callable<Void>() {
-//            public Void call() {
-//                Photo.Load(trail.PhotoId(), featured_image);
-//                return null;
-//            }
-//        });
+        ParseQuery<Photo> query = Photo.getQuery();
+        query.fromLocalDatastore();
+        query.whereEqualTo(DBContract.Photos._ID, trail.PhotoId());
+        query.getFirstInBackground(new GetCallback<Photo>() {
+            @Override
+            public void done(Photo photo, ParseException e) {
+                if (e==null)
+                    photo.LoadData(featured_image);
+                else
+                    Log.w("TrailAdapter", e.getMessage());
+            }
+        });
         int resID = trail.getDifficultyIcon();
         if (resID >=0) holder.mDifficulty.setImageResource(resID);
         else holder.mDifficulty.setImageResource(0);

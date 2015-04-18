@@ -3,6 +3,7 @@ package com.brentandjody.mountainunicyclist;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,26 +64,22 @@ public class TrailEditActivity extends ActionBarActivity {
             query.getFirstInBackground(new GetCallback<Trail>() {
                 @Override
                 public void done(Trail trail, ParseException e) {
-                    mTrail = trail;
-                    setupViews();
+                    if (e == null) {
+                        mTrail = trail;
+                        setupViews();
+                    } else {
+                        Log.w("Load Trail", e.getMessage());
+                    }
                 }
             });
         } else {
+            Log.i("TrailEdit", "Creating a new trail");
             mTrail = new Trail();
+            mTrail.setID();
             mTrail.setRating(4);
             setupViews();
         }
-        if (intent.hasExtra("photoId")) {
-            ParseQuery<Photo> query = Photo.getQuery();
-            query.fromLocalDatastore();
-            query.whereEqualTo(DBContract.Photos._ID, intent.getStringExtra("photoId"));
-            query.getFirstInBackground(new GetCallback<Photo>() {
-                @Override
-                public void done(Photo photo, ParseException e) {
-                    mTrail.setPhoto(photo);
-                }
-            });
-        }
+
     }
 
     @Override
@@ -111,9 +108,15 @@ public class TrailEditActivity extends ActionBarActivity {
             //TODO:set trailsystem
             //TODO:set selected feature photoid
             // update missing trailid on photo (not always necessary)
-            if (mTrail.Photo()!=null) {
-                mTrail.Photo().setOwnerId(mTrail.ID());
-            }
+            ParseQuery<Photo> query =  Photo.getQuery();
+            query.fromLocalDatastore();
+            query.whereEqualTo(DBContract.Photos._ID, mTrail.PhotoId());
+            query.getFirstInBackground(new GetCallback<Photo>() {
+                @Override
+                public void done(Photo photo, ParseException e) {
+                    photo.setOwnerId(mTrail.ID());
+                }
+            });
         }
         mTrail.pinInBackground();
         mTrail.saveEventually();
@@ -122,8 +125,8 @@ public class TrailEditActivity extends ActionBarActivity {
     }
 
     private void cancelTrail() {
-        if (mTrail!=null && mTrail.Photo()!=null)
-            Photo.Delete(mTrail.Photo().ID());
+        if (mTrail!=null)
+            Photo.Delete(mTrail.PhotoId());
         finish();
     }
 
@@ -131,40 +134,23 @@ public class TrailEditActivity extends ActionBarActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("location")) {
             mTrail.setLocation((LatLng) intent.getParcelableExtra("location"));
-            Log.d("LATITUDE", mTrail.Location().latitude+"");
-            Log.d("LONGITUDE", mTrail.Location().longitude+"");
         }
         if (intent.hasExtra("photoid")) {
-            String id = intent.getStringExtra("photoid");
             ParseQuery<Photo> query = Photo.getQuery();
             query.fromLocalDatastore();
-            query.whereEqualTo(DBContract.Photos._ID, id);
+            query.whereEqualTo(DBContract.Photos._ID, intent.getStringExtra("photoid"));
             query.getFirstInBackground(new GetCallback<Photo>() {
                 public void done(Photo photo, ParseException e) {
-                    mTrail.setPhoto(photo);
+                if (e==null)
+                    mTrail.setPhotoId(photo.ID());
+                else
+                    Log.w("TrailEdit", "SetPhotoId failed: " + e.getMessage());
                 }
            });
-        };
-        name.setText(mTrail.Name());
-        if (mTrail.Difficulty()==null)
-            mTrail.setDifficulty(Trail.Difficulty.MEDIUM);
-        switch (mTrail.Difficulty()) {
-            case EASY:
-                difficulty.check(R.id.easy);
-                break;
-            case MEDIUM:
-                difficulty.check(R.id.medium);
-                break;
-            case DIFFICULT:
-                difficulty.check(R.id.difficult);
-                break;
-            case EXPERT:
-                difficulty.check(R.id.expert);
-                break;
-            default:
-                difficulty.check(R.id.medium);
-                break;
         }
+        name.setText(mTrail.Name());
+        if (mTrail.Difficulty()==null) mTrail.setDifficulty(Trail.Difficulty.MEDIUM);
+        difficulty.check(mTrail.getDifficultyResource());
         rating.setRating(mTrail.Rating());
         description.setText(mTrail.Description());
         setupButtonListeners();
@@ -199,17 +185,38 @@ public class TrailEditActivity extends ActionBarActivity {
         query.findInBackground(new FindCallback<Photo>() {
             @Override
             public void done(List<Photo> photos, ParseException e) {
-                if (e!=null)
+                if (e != null)
                     Log.w("SetupPhotoPicker()", e.getMessage());
                 for (Photo photo : photos) {
                     ImageView iv = new ImageView(getApplication());
-                    iv.setMaxHeight(96);
-                    iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
+                    iv.setTag(0, photo.ID());
+                    if (mTrail.PhotoId() == photo.ID()) {
+                        markSelected(iv);
+                    } else {
+                        iv.setMaxHeight(96);
+                    }
+                    iv.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            markSelected((ImageView) v);
+                            mTrail.setPhotoId((String)v.getTag(0));
+                        }
+                    });
+                    photo.LoadData(iv);
                     photo_picker.addView(iv);
                 }
 
             }
         });
+    }
+
+    private void markSelected(ImageView iv) {
+        for (int i = 0; i<photo_picker.getChildCount(); i++) {
+            ((ImageView)photo_picker.getChildAt(i)).setMaxHeight(96);
+            (photo_picker.getChildAt(i)).setBackgroundColor(Color.TRANSPARENT);
+        }
+        iv.setMaxHeight(128);
+        iv.setBackgroundColor(Color.YELLOW);
     }
 
     @Override

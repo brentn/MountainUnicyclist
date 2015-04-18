@@ -9,10 +9,9 @@
     android:layout_marginRight="8dp"
     android:layout_marginTop="2dp"
     android:layout_marginBottom="12dp"
-    android:background="@color/card_background"
-    android:elevation="10dp"
     android:transitionGroup="false"
-    android:id="@+id/all">
+    android:id="@+id/all"
+    android:elevation="4dp">
 
     <!-- A CardView that contains a TextView -->
     <ImageView
@@ -23,7 +22,8 @@
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:layout_marginLeft="-25dp"
-        android:layout_marginRight="-25dp" />
+        android:layout_marginRight="-25dp"
+        android:background="@color/card_background" />
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -87,7 +87,8 @@
         android:paddingLeft="10dp"
         android:layout_below="@+id/feature_photo"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:background="@color/card_background">
 
         <FrameLayout
             android:layout_width="fill_parent"

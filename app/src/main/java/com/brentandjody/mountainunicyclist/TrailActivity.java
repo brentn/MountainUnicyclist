@@ -71,9 +71,15 @@ public class TrailActivity extends ActionBarActivity {
     }
 
     private void populateFields() {
-        if (mTrail!=null && mTrail.Photo()!=null)
-            feature_photo.setImageBitmap(
-                BitmapFactory.decodeByteArray(mTrail.Photo().Data(), 0, mTrail.Photo().Data().length));
+        ParseQuery<Photo> query = Photo.getQuery();
+        query.fromLocalDatastore();
+        query.whereEqualTo(DBContract.Photos._ID, mTrail.PhotoId());
+        query.getFirstInBackground(new GetCallback<Photo>() {
+            @Override
+            public void done(Photo photo, ParseException e) {
+                photo.LoadData(feature_photo);
+            }
+        });
         name.setText(mTrail.Name());
         difficulty.setImageResource(mTrail.getDifficultyIcon());
         rating.setText(mTrail.getStars());
@@ -93,7 +99,7 @@ public class TrailActivity extends ActionBarActivity {
                 for (Photo photo : photos) {
                     ImageView iv = new ImageView(getApplication());
                     iv.setMaxHeight(96);
-                    iv.setImageBitmap(BitmapFactory.decodeByteArray(photo.Data(), 0, photo.Data().length));
+                    photo.LoadData(iv);
                     photo_picker.addView(iv);
                 }
 

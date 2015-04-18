@@ -200,8 +200,8 @@ public class MainActivity extends ActionBarActivity {
                             photo.saveEventually();
                             intent.putExtra("photoid", photo.ID());
                         }
-                        Trail.LoadTrailAdapter(mAdapter);
-                        intent.putExtra("location", data.getParcelableExtra("location"));
+                        if (intent.hasExtra("location"))
+                            intent.putExtra("location", data.getParcelableExtra("location"));
                         startActivity(intent);
                     }
                 }
