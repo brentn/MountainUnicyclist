@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
+import com.parse.ParseQuery;
 
 import java.util.List;
 
@@ -65,6 +68,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     public TrailAdapter(Context context) {
         mContext = context;
         mDataset = null;
+        LoadFromParse();
         LoadAllTrails();
         mMyLocation = LocationHelper.getGPS(context);
     }
@@ -81,6 +85,37 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
             }
         });
+    }
+
+    private void LoadFromParse() {
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if ((ni != null) && (ni.isConnected())) {
+            ParseQuery<Trail> trail_query = Trail.getQuery();
+            trail_query.findInBackground(new FindCallback<Trail>() {
+                @Override
+                public void done(List<Trail> trails, ParseException e) {
+                    if (e==null) {
+                        for (Trail trail : trails) {
+                            trail.pinInBackground();
+                        }
+                        Log.d("LoadFromParse", trails.size() + " trails downloaded from Parse.com");
+                        LoadAllTrails();
+                    } else Log.w("LoadFromParse", e.getMessage());
+                }
+            });
+            ParseQuery<Photo> photo_query = Photo.getQuery();
+            photo_query.findInBackground(new FindCallback<Photo>() {
+                @Override
+                public void done(List<Photo> photos, ParseException e) {
+                    for (Photo photo : photos) {
+                        photo.pinInBackground();
+                    }
+                }
+            });
+        } else {
+            //TODO:
+        }
     }
 
     @Override

@@ -20,6 +20,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.ImageView;
 
 import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Flags;
@@ -45,6 +49,7 @@ public class MainActivity extends ActionBarActivity {
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
+    ImageView mSplashScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +69,11 @@ public class MainActivity extends ActionBarActivity {
         return true;
     }
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
-        loadFromParse();
     }
 
 
@@ -86,32 +92,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadFromParse() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo ni = cm.getActiveNetworkInfo();
-        if ((ni != null) && (ni.isConnected())) {
-            ParseQuery<Trail> query = Trail.getQuery();
-            query.findInBackground(new FindCallback<Trail>() {
-                @Override
-                public void done(List<Trail> trails, ParseException e) {
-                    for (Trail trail : trails) {
-                        trail.pinInBackground();
-                    }
-                }
-            });
-            ParseQuery<Photo> photo_query = Photo.getQuery();
-            photo_query.findInBackground(new FindCallback<Photo>() {
-                @Override
-                public void done(List<Photo> photos, ParseException e) {
-                    for (Photo photo : photos) {
-                        photo.pinInBackground();
-                    }
-                }
-            });
-        } else {
-            //TODO:
-        }
-    }
+
 
 
     /**

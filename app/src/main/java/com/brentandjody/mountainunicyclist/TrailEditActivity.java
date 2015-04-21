@@ -1,10 +1,8 @@
 package com.brentandjody.mountainunicyclist;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,17 +18,13 @@ import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Spinner;
 
-import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Difficulty;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
-import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.util.List;
@@ -42,6 +36,7 @@ public class TrailEditActivity extends ActionBarActivity {
     private static LinearLayout.LayoutParams selected = new LinearLayout.LayoutParams(128, LinearLayout.LayoutParams.WRAP_CONTENT);
 
     private Trail mTrail = null;
+    private boolean mIsNewImage =false;
     private EditText name;
     private RadioGroup difficulty;
     private RatingBar rating;
@@ -79,6 +74,7 @@ public class TrailEditActivity extends ActionBarActivity {
         } else {
             Log.i("TrailEdit", "Creating a new trail");
             mTrail = new Trail();
+            mIsNewImage =true;
             //need to save to get ID
             mTrail.saveInBackground(new SaveCallback() {
                 @Override
@@ -123,7 +119,7 @@ public class TrailEditActivity extends ActionBarActivity {
     }
 
     private void cancelTrail() {
-        if (mTrail!=null)
+        if (mTrail!=null && mIsNewImage)
             Photo.Delete(mTrail.PhotoId());
         finish();
     }
