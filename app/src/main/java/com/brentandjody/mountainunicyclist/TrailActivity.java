@@ -76,7 +76,7 @@ public class TrailActivity extends ActionBarActivity {
             }
         });
         name.setText(mTrail.Name());
-        difficulty.setImageResource(mTrail.Difficulty().Icon());
+        difficulty.setImageResource(mTrail.Difficulty().Resource());
         rating.setText(mTrail.Stars());
         description.setText(mTrail.Description());
         //TODO:trailsystem
