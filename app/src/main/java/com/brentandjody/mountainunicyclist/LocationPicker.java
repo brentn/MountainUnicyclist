@@ -101,8 +101,7 @@ public class LocationPicker extends FragmentActivity {
                     .title(getString(R.string.trail_head))
                     .draggable(true));
         } else {
-            Location loc = LocationHelper.getGPS(this);
-            latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
+            latLng = LocationHelper.getGPS(this);
         }
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {

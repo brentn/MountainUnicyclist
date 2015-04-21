@@ -36,7 +36,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
     private List<Trail> mDataset;
     private Context mContext;
-    private Location mMyLocation;
+    private LatLng mMyLocation;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public FrameLayout mTitlebar;
@@ -158,10 +158,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         float[] result = new float[3];
         mMyLocation = LocationHelper.getGPS(mContext);
         if (mMyLocation!=null && trail.Location()!=null) {
-            Location trailLocation = new Location("TrailLocation");
-            trailLocation.setLatitude((trail.Location().latitude));
-            trailLocation.setLatitude((trail.Location().longitude));
-            float distance = mMyLocation.distanceTo(trailLocation)/1000;
+            double distance = LocationHelper.Distance(mMyLocation, trail.Location());
             holder.mDistance.setText("approx. " + String.format("%.1f", distance) + " km. away");
         } else holder.mDistance.setVisibility(View.INVISIBLE);
         holder.mRideStats.setText("Rides: 0/0");
