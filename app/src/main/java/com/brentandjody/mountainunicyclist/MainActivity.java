@@ -99,6 +99,15 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
             });
+            ParseQuery<Photo> photo_query = Photo.getQuery();
+            photo_query.findInBackground(new FindCallback<Photo>() {
+                @Override
+                public void done(List<Photo> photos, ParseException e) {
+                    for (Photo photo : photos) {
+                        photo.pinInBackground();
+                    }
+                }
+            });
         } else {
             //TODO:
         }

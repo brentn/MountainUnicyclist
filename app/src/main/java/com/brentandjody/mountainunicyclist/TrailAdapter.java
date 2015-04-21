@@ -76,7 +76,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
                 if (e==null) {
                     mDataset = trails;
                     TrailAdapter.this.notifyDataSetChanged();
-                    Log.d("LoadAllTrails", "succeeded");
+                    Log.d("LoadAllTrails", "succeeded loading "+trails.size()+" trails");
                 } else Log.w("LoadAllTrails", e.getMessage());
 
             }

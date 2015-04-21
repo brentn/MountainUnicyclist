@@ -66,8 +66,7 @@ public class TrailEditActivity extends ActionBarActivity {
         okButton = (Button) findViewById(R.id.ok_button);
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
-            mTrail = new Trail();
-            mTrail.Load(intent.getStringExtra("trailId"), new GetCallback<Trail>() {
+            Trail.Load(intent.getStringExtra("trailId"), new GetCallback<Trail>() {
                 @Override
                 public void done(Trail trail, ParseException e) {
                     if (e==null) {
@@ -80,7 +79,14 @@ public class TrailEditActivity extends ActionBarActivity {
         } else {
             Log.i("TrailEdit", "Creating a new trail");
             mTrail = new Trail();
-            setupViews();
+            //need to save to get ID
+            mTrail.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    mTrail.getObjectId();
+                    setupViews();
+                }
+            });
         }
 
     }
@@ -128,15 +134,22 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail.setLocation((LatLng) intent.getParcelableExtra("location"));
         }
         if (intent.hasExtra("photo")) {
-            byte[] image = intent.getByteArrayExtra("photo");
-            Photo photo = new Photo();
+            final byte[] image = intent.getByteArrayExtra("photo");
+            final Photo photo = new Photo();
             photo.setData(image);
             photo.setOwnerId(mTrail.ID());
-            mTrail.setPhotoId(photo.ID());
             if (intent.hasExtra("isTemporaryPhoto")) photo.FLAGS().setTemporary();
             setupPhotoPicker();
-            addImageToPhotoPicker(image, photo.ID());
-            photo.Save();
+            photo.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        mTrail.setPhotoId(photo.ID());
+                        addImageToPhotoPicker(image, photo.ID());
+                        Log.d("SetupViews", "Photo saved");
+                    } else Log.w("SetupViews", e.getMessage());
+                }
+            });
         }
         name.setText(mTrail.Name());
         difficulty.check(mTrail.Difficulty().Resource());

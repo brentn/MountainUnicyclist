@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 @ParseClassName("Trail")
 public class Trail extends ParseObject {
-    private static final String ID = "trailid";
+    private static final String ID = "objectId"; //don't change this name
     private static final String NAME = "name";
     private static final String DESCRIPTION = "description";
     private static final String LAT = "latitude";
@@ -34,42 +34,40 @@ public class Trail extends ParseObject {
 
     private static final int MAX_STARS = 8;
 
-    private String mId = UUID.randomUUID().toString();
-    private String mName = "";
-    private String mDescription = "";
-    private LatLng mLocation = null;
-    private Difficulty mDifficulty = new Difficulty();
-    private int mRating = MAX_STARS/2;
-    private String mFeaturedPhotoId = "";
-    private String mTrailsystemId = "";
-    private Flags mFlags = new Flags();
-
     public Trail() {}
 
+    public static Trail Create() { return (Trail)ParseObject.createWithoutData("Trail", UUID.randomUUID().toString());}
     public static ParseQuery<Trail> getQuery() { return ParseQuery.getQuery(Trail.class); }
 
-    public void setName(String name) { mName=name; }
-    public void setDescription(String description) { mDescription = description; }
-    public void setLocation(LatLng location) { mLocation = location; }
+    public void setName(String name) { put(NAME, name); }
+    public void setDescription(String description) { put(DESCRIPTION, description); }
+    public void setLocation(LatLng location) {
+        put(LAT, location.latitude);
+        put(LNG, location.longitude);
+    }
     public void setRating(int rating) {
         if (rating < 0) return;
         if (rating > MAX_STARS) rating=MAX_STARS;
-        mRating = rating;
+        put(RATING, rating);
     }
-    public void setDifficulty(Difficulty difficulty) { mDifficulty = difficulty;}
-    public void setTrailsystem(String trailsystem_id) { mTrailsystemId = trailsystem_id;}
-    public void setPhotoId(String photo_id) { mFeaturedPhotoId = photo_id; }
-    public void setFlags(Flags flags) { mFlags = flags;}
+    public void setDifficulty(Difficulty difficulty) { put(DIFFICULTY, difficulty.toInt()); }
+    public void setTrailsystem(String trailsystem_id) { put(TRAILSYSTEM_ID, trailsystem_id);}
+    public void setPhotoId(String photo_id) { put(PHOTO_ID, photo_id); }
+    public void setFlags(Flags flags) { put(FLAGS, flags.toInt()); }
 
-    public String ID() {return mId;}
-    public String Name() {return mName;}
-    public String Description() {return mDescription;}
-    public LatLng Location() { return mLocation; }
-    public int Rating() {return mRating;}
-    public Difficulty Difficulty() {return mDifficulty;}
-    public String TrailsystemId() {return mTrailsystemId;}
-    public String PhotoId() {return mFeaturedPhotoId;}
-    public Flags FLAGS() {return mFlags;}
+    public String ID() {return getObjectId();}
+    public String Name() {return getString(NAME);}
+    public String Description() {return getString(DESCRIPTION);}
+    public LatLng Location() {
+        double lat = getDouble(LAT);
+        double lng = getDouble(LNG);
+        return new LatLng(lat, lng);
+    }
+    public int Rating() {return getInt(RATING);}
+    public Difficulty Difficulty() {return new Difficulty(getInt(DIFFICULTY));}
+    public String TrailsystemId() {return getString(TRAILSYSTEM_ID);}
+    public String PhotoId() {return getString(PHOTO_ID);}
+    public Flags FLAGS() {return new Flags(getInt(FLAGS));}
     public String Stars() {
         int count = getInt(RATING);
 
@@ -89,19 +87,6 @@ public class Trail extends ParseObject {
     }
 
     public void Save() {
-        put(ID, mId);
-        put(NAME, mName);
-        put(DESCRIPTION, mDescription);
-        if (mLocation==null) {
-            put(LAT, 0);
-            put(LNG, 0);
-        } else put(LAT, mLocation.latitude);
-        put(LNG, mLocation.longitude);
-        put(RATING, mRating);
-        put(DIFFICULTY, mDifficulty.toInt());
-        put(TRAILSYSTEM_ID, mTrailsystemId);
-        put(PHOTO_ID, mFeaturedPhotoId);
-        put(FLAGS, mFlags.toInt());
         saveEventually(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -113,49 +98,16 @@ public class Trail extends ParseObject {
     public void Load(String trail_id) {
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
-        query.getFirstInBackground(new GetCallback<Trail>() {
-            @Override
-            public void done(Trail trail, ParseException e) {
-                if (e == null) {
-                    mId = trail.getString(ID);
-                    mName = trail.getString(NAME);
-                    mDescription = trail.getString(DESCRIPTION);
-                    double lat = trail.getDouble(LAT);
-                    double lng = trail.getDouble(LNG);
-                    if (lat == 0 && lng == 0) mLocation = null;
-                    else mLocation = new LatLng(lat, lng);
-                    mRating = trail.getInt(RATING);
-                    mDifficulty = new Difficulty(getInt(DIFFICULTY));
-                    mTrailsystemId = getString(TRAILSYSTEM_ID);
-                    mFeaturedPhotoId = getString(PHOTO_ID);
-                    mFlags = new Flags(getInt(FLAGS));
-                    Log.d("LoadTrail", "trail loaded");
-                } else Log.w("LoadTrail", e.getMessage());
-            }
-        });
+        query.getInBackground(trail_id);
     }
-    public void Load(String trail_id, final GetCallback callback) {
+    public static void Load(String trail_id, final GetCallback callback) {
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
-        query.whereEqualTo(ID, trail_id);
-        query.getFirstInBackground(new GetCallback<Trail>() {
+        query.getInBackground(trail_id, new GetCallback<Trail>() {
             @Override
             public void done(Trail trail, ParseException e) {
-                if (e == null) {
-                    mId = trail.getString(ID);
-                    mName = trail.getString(NAME);
-                    mDescription = trail.getString(DESCRIPTION);
-                    double lat = trail.getDouble(LAT);
-                    double lng = trail.getDouble(LNG);
-                    if (lat == 0 && lng == 0) mLocation = null;
-                    else mLocation = new LatLng(lat, lng);
-                    mRating = trail.getInt(RATING);
-                    mDifficulty = new Difficulty(getInt(DIFFICULTY));
-                    mTrailsystemId = getString(TRAILSYSTEM_ID);
-                    mFeaturedPhotoId = getString(PHOTO_ID);
-                    mFlags = new Flags(getInt(FLAGS));
-                    Log.d("LoadTrail", "trail loaded");
-                } else Log.w("LoadTrail", e.getMessage());
+                if (e == null) Log.d("LoadTrail", "trail loaded");
+                else Log.w("LoadTrail", e.getMessage());
                 callback.done(trail, e);
             }
         });
