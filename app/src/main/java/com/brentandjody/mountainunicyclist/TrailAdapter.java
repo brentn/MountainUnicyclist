@@ -20,6 +20,7 @@ import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -35,7 +36,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
     private List<Trail> mDataset;
     private Context mContext;
-    private LatLng mMyLocation;
+    private Location mMyLocation;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public FrameLayout mTitlebar;
@@ -128,6 +129,10 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Trail trail = mDataset.get(position);
+        if (trail.Name()==null) {
+            removeTrail(trail);
+            return;
+        }
         final ImageView featured_image = holder.mPhoto;
         if (trail.Name().isEmpty()) holder.mTitle.setText(mContext.getString(R.string.trail));
         else holder.mTitle.setText(trail.Name());
@@ -152,14 +157,12 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         holder.mRating.setText(trail.Stars());
         float[] result = new float[3];
         if (mMyLocation!=null && trail.Location()!=null) {
-            Location.distanceBetween(mMyLocation.latitude,
-                    mMyLocation.longitude,
-                    trail.Location().latitude,
-                    trail.Location().longitude,
-                    result);
-            float distance = result[0] / 10;
+            Location trailLocation = new Location("TrailLocation");
+            trailLocation.setLatitude((trail.Location().latitude));
+            trailLocation.setLatitude((trail.Location().longitude));
+            float distance = mMyLocation.distanceTo(trailLocation);
             holder.mDistance.setText("approx. " + String.format("%.1f", distance) + " km. away");
-        } else holder.mDistance.setText("");
+        } else holder.mDistance.setVisibility(View.INVISIBLE);
         holder.mRideStats.setText("Rides: 0/0");
         holder.mEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,6 +186,21 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     public int getItemCount() {
         if (mDataset==null) return 0;
         return mDataset.size();
+    }
+
+    private void removeTrail(Trail trail) {
+        trail.deleteInBackground(new DeleteCallback() {
+            @Override
+            public void done(ParseException e) {
+                Trail.LoadAllTrails(new FindCallback<Trail>() {
+                    @Override
+                    public void done(List<Trail> trails, ParseException e) {
+                        mDataset = trails;
+                        notifyDataSetChanged();
+                    }
+                });
+            }
+        });
     }
 
 

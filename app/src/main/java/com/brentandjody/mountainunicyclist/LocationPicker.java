@@ -3,6 +3,7 @@ package com.brentandjody.mountainunicyclist;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -100,7 +101,8 @@ public class LocationPicker extends FragmentActivity {
                     .title(getString(R.string.trail_head))
                     .draggable(true));
         } else {
-            latLng = LocationHelper.getGPS(this);
+            Location loc = LocationHelper.getGPS(this);
+            latLng = new LatLng(loc.getLatitude(), loc.getLongitude());
         }
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
