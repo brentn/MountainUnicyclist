@@ -142,7 +142,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         Photo.LoadImage(trail.PhotoId(), new GetDataCallback() {
             @Override
             public void done(byte[] bytes, ParseException e) {
-                if (e==null) {
+                if (e == null) {
                     featured_image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                     Log.d("TrailAdapter", "featured image loaded");
                 } else Log.w("TrailAdapter", e.getMessage());
@@ -156,11 +156,12 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         int rating = trail.Rating(); //TODO: this should take into consideration ride ratings
         holder.mRating.setText(trail.Stars());
         float[] result = new float[3];
+        mMyLocation = LocationHelper.getGPS(mContext);
         if (mMyLocation!=null && trail.Location()!=null) {
             Location trailLocation = new Location("TrailLocation");
             trailLocation.setLatitude((trail.Location().latitude));
             trailLocation.setLatitude((trail.Location().longitude));
-            float distance = mMyLocation.distanceTo(trailLocation);
+            float distance = mMyLocation.distanceTo(trailLocation)/1000;
             holder.mDistance.setText("approx. " + String.format("%.1f", distance) + " km. away");
         } else holder.mDistance.setVisibility(View.INVISIBLE);
         holder.mRideStats.setText("Rides: 0/0");
