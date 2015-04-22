@@ -107,14 +107,18 @@ public class MainActivity extends ActionBarActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return new PlacesFragment().newInstance(position + 1);
+            switch (position) {
+                case 0:return new PlacesFragment();
+                case 1:return new RidesFragment();
+                case 2:return new PeopleFragment();
+            }
+
+            return new PlacesFragment();
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+
             return 3;
         }
 
@@ -133,72 +137,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public static class PlacesFragment extends Fragment {
-        private static final String ARG_SECTION_NUMBER = "section_number";
-        private RecyclerView mRecyclerView;
-        private TrailAdapter mAdapter;
-        private RecyclerView.LayoutManager mLayoutManager;
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlacesFragment newInstance(int sectionNumber) {
-            PlacesFragment fragment = new PlacesFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlacesFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_trails, container, false);
-            mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-            mRecyclerView.setHasFixedSize(true);
-            mLayoutManager = new LinearLayoutManager(getActivity());
-            mRecyclerView.setLayoutManager(mLayoutManager);
-            mAdapter = new TrailAdapter(getActivity());
-            mRecyclerView.setAdapter(mAdapter);
-            FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
-            fab.attachToRecyclerView(mRecyclerView);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent locationPickerIntent = new Intent(getActivity(), LocationPicker.class);
-                    startActivityForResult(locationPickerIntent, Application.NEW_LOCATION);
-                }
-            });
-
-            return rootView;
-        }
-
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            switch (requestCode) {
-                case Application.NEW_LOCATION:
-                    if (resultCode == RESULT_OK) {
-                        Intent intent = new Intent (getActivity(), TrailEditActivity.class);
-                        if (data.hasExtra("map_screenshot")) {
-                            intent.putExtra("photo", data.getByteArrayExtra("map_screenshot"));
-                            intent.putExtra("isTemporaryPhoto", true);
-                        }
-                        if (data.hasExtra("location"))
-                            intent.putExtra("location", data.getParcelableExtra("location"));
-                        startActivity(intent);
-                    }
-                break;
-                case Application.EDIT_TRAIL:
-                    if (resultCode == RESULT_OK) {
-                        mAdapter.LoadAllTrails();
-                    break;
-                }
-            }
-        }
-
-    }
 
 }

@@ -149,7 +149,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             }
         });
         holder.mDifficulty.setImageResource(trail.Difficulty().Resource());
-        String trailsystem = "No trailsystem"; //TODO:lookup trailsystem
+        String trailsystem = ""; //TODO:lookup trailsystem
         holder.mTrailsystem.setText(trailsystem);
 
         //calculated or processed values
@@ -158,8 +158,10 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         float[] result = new float[3];
         mMyLocation = LocationHelper.getGPS(mContext);
         if (mMyLocation!=null && trail.Location()!=null) {
-            double distance = LocationHelper.Distance(mMyLocation, trail.Location());
-            holder.mDistance.setText("approx. " + String.format("%.1f", distance) + " km. away");
+            float[] distances = new float[3];
+            Location.distanceBetween(mMyLocation.latitude, mMyLocation.longitude,
+                    trail.Location().latitude, trail.Location().longitude, distances);
+            holder.mDistance.setText("approx. " + String.format("%.0f", distances[0]/1000) + " km. away");
         } else holder.mDistance.setVisibility(View.INVISIBLE);
         holder.mRideStats.setText("Rides: 0/0");
         holder.mEditBtn.setOnClickListener(new View.OnClickListener() {

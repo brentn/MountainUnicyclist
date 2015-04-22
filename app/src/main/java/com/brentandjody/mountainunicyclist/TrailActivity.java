@@ -2,6 +2,7 @@ package com.brentandjody.mountainunicyclist;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import com.brentandjody.mountainunicyclist.data.DBContract;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
@@ -27,6 +30,7 @@ public class TrailActivity extends ActionBarActivity {
     private Trail mTrail = null;
     private ImageView feature_photo;
     private TextView name;
+    private TextView distance;
     private ImageView difficulty;
     private TextView rating;
     private TextView description;
@@ -42,6 +46,7 @@ public class TrailActivity extends ActionBarActivity {
         setContentView(R.layout.trail);
         feature_photo = (ImageView) findViewById(R.id.feature_photo);
         name = (TextView) findViewById(R.id.title);
+        distance = (TextView) findViewById(R.id.distance);
         difficulty = (ImageView) findViewById(R.id.difficulty_icon);
         rating = (TextView) findViewById(R.id.rating);
         description = (TextView) findViewById(R.id.description);
@@ -53,10 +58,11 @@ public class TrailActivity extends ActionBarActivity {
         mTrail = new Trail();
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
-            mTrail.Load(intent.getStringExtra("trailId"), new GetCallback<Trail>() {
+            Trail.Load(intent.getStringExtra("trailId"), new GetCallback<Trail>() {
                 @Override
                 public void done(Trail trail, ParseException e) {
                     if (e==null) {
+                        mTrail = trail;
                         Log.d("TrailActivity", "trail loaded");
                         populateFields();
                     } else Log.w("TrailActivity", e.getMessage());
@@ -75,7 +81,12 @@ public class TrailActivity extends ActionBarActivity {
                 } else Log.w("PopulateTrail", e.getMessage());
             }
         });
+        LatLng myLocation = LocationHelper.getGPS(getApplication());
         name.setText(mTrail.Name());
+        float[] distances = new float[3];
+        Location.distanceBetween(myLocation.latitude, myLocation.longitude,
+                mTrail.Location().latitude, mTrail.Location().longitude, distances);
+        distance.setText("approx. " + String.format("%.0f", distances[0]/1000) + " km. away");
         difficulty.setImageResource(mTrail.Difficulty().Resource());
         rating.setText(mTrail.Stars());
         description.setText(mTrail.Description());

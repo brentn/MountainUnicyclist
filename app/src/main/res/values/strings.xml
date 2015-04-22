@@ -20,14 +20,12 @@
     <string name="trail_head">Trail Head</string>
     <string name="trails">Trails</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="features">Features</string>
     <string name="rides">Rides</string>
     <string name="difficulty">Difficulty</string>
-    <string name="rating">Small Text</string>
+    <string name="rating">Rating</string>
     <string name="trail_name">Trail Name</string>
-    <string name="trailsystem">Small Text</string>
+    <string name="trailsystem">Trailsystem</string>
     <string name="title_activity_trail">TrailActivity</string>
     <string name="photos">Photos</string>
     <string name="comments">Comments</string>
@@ -35,4 +33,5 @@
     <string name="ride_now">Ride Now!</string>
     <string name="add_comment">Add Comment</string>
     <string name="trail">Trail</string>
+    <string name="people">People</string>
 </resources>

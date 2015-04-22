@@ -102,7 +102,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="no trailsystem"
                     android:id="@+id/trailsystem"
                     android:layout_gravity="right|center_vertical"
                     android:paddingTop="10dp" />
@@ -202,9 +201,9 @@
                     android:text="Add Comment"
                     android:id="@+id/add_comment_button"
                     android:textColor="@color/accent"
-                    android:layout_gravity="right"
                     android:padding="12dp"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_gravity="left" />
             </LinearLayout>
 
         </LinearLayout>

@@ -31,12 +31,12 @@ public class LocationHelper {
         }
         return result;
     }
-    public static double Distance(LatLng p1, LatLng p2) {
-        double dLat = p1.latitude-p2.latitude;
-        double dLng = p1.longitude-p2.longitude;
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(p1.latitude) * Math.cos(p2.latitude);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double result = c*250 ;
-        return result;
-    }
+//    public static double Distance(LatLng p1, LatLng p2) {
+//        double dLat = p1.latitude-p2.latitude;
+//        double dLng = p1.longitude-p2.longitude;
+//        double a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(p1.latitude) * Math.cos(p2.latitude);
+//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+//        double result = c*250 ;
+//        return result;
+//    }
 }
