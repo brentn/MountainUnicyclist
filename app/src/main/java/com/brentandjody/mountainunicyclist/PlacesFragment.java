@@ -60,7 +60,6 @@ public class PlacesFragment extends Fragment {
                 break;
             case Application.EDIT_TRAIL:
                 if (resultCode == Activity.RESULT_OK) {
-                    mAdapter.LoadAllTrails();
                     break;
                 }
         }

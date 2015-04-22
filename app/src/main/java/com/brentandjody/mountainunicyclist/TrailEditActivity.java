@@ -96,24 +96,24 @@ public class TrailEditActivity extends ActionBarActivity {
     private void saveTrail() {
         if (mTrail !=null) {
             mTrail.setName(name.getText().toString());
-            switch (difficulty.getCheckedRadioButtonId()) {
-                case R.id.easy:
-                    mTrail.setDifficulty(new Difficulty(0)); break;
-                case R.id.medium:
-                    mTrail.setDifficulty(new Difficulty(1)); break;
-                case R.id.difficult:
-                    mTrail.setDifficulty(new Difficulty(2)); break;
-                case R.id.expert:
-                    mTrail.setDifficulty(new Difficulty(3)); break;
-                default:
-                    mTrail.setDifficulty(new Difficulty());
-            }
+            mTrail.setDifficulty(Difficulty.fromResource(difficulty.getCheckedRadioButtonId()));
             mTrail.setRating(Math.round(rating.getRating()));
             mTrail.setDescription(description.getText().toString());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
         }
-        mTrail.Save();
+        final int adapterPosition = getIntent().getIntExtra("adapter_position", -1);
+        mTrail.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e==null) {
+                    Intent intent = new Intent();
+                    intent.putExtra("adapter_position", adapterPosition);
+                    intent.setAction("com.brentandjody.TrailSaved");
+                    sendBroadcast(intent);
+                } else Log.w("SaveTrail", e.getMessage());
+            }
+        });
         setResult(Activity.RESULT_OK);
         finish();
     }

@@ -1,5 +1,6 @@
 package com.brentandjody.mountainunicyclist;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -127,7 +128,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         final Trail trail = mDataset.get(position);
         if (trail.Name()==null) {
             removeTrail(trail);
@@ -169,6 +170,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, TrailEditActivity.class);
                 intent.putExtra("trailId", trail.ID());
+                intent.putExtra("adapterPosition", position);
                 mContext.startActivity(intent);
             }
         });

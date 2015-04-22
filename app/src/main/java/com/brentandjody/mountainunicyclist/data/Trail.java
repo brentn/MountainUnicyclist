@@ -86,15 +86,6 @@ public class Trail extends ParseObject {
         return result;
     }
 
-    public void Save() {
-        saveEventually(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e==null) Log.d("SaveTrail", "Trail saved");
-                else Log.w("SaveTrail", e.getMessage());
-            }
-        });
-    }
     public void Load(String trail_id) {
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
