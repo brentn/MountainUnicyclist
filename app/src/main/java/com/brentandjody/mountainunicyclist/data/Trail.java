@@ -15,6 +15,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -142,7 +143,7 @@ public class Trail extends ParseObject {
         });
     }
 
-    public static void LoadAllTrails(final LatLng myLocation, final FindCallback<Trail> callback) {
+    public static void LoadAllTrails(final LatLng myLocation, final int distance, final FindCallback<Trail> callback) {
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
         query.findInBackground(new FindCallback<Trail>() {
@@ -151,6 +152,7 @@ public class Trail extends ParseObject {
                 for (Trail trail : list) {
                     trail.calculateDistance(myLocation);
                 }
+                if (distance > 0) limit(list, distance);
                 sort(list);
                 callback.done(list, e);
             }
@@ -176,9 +178,9 @@ public class Trail extends ParseObject {
         int distance = (mDistance>=0?mDistance:50); //estimate 50km away, if unknown
         return rating*50-distance;
     }
-    private static void sort(List<Trail> list) {
-        if (list.size()>0) {
-            Collections.sort(list, new Comparator<Trail>() {
+    private static void sort(List<Trail> trails) {
+        if (trails.size()>0) {
+            Collections.sort(trails, new Comparator<Trail>() {
                 @Override
                 public int compare(Trail t1, Trail t2) {
                     if (t1.sortValue()<t2.sortValue()) return 1;
@@ -186,6 +188,16 @@ public class Trail extends ParseObject {
                     return 0;
                 }
             });
+        }
+    }
+    private static void limit(List<Trail> trails, int limit) {
+        if (trails.size()>0) {
+            List<Trail> removable = new ArrayList<Trail>();
+            for (Trail trail : trails) {
+                if (trail.Distance()>limit)
+                    removable.add(trail);
+            }
+            trails.removeAll(removable);
         }
     }
 

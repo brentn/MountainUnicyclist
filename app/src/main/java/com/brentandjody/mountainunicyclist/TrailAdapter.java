@@ -33,6 +33,7 @@ import java.util.Observer;
  * Created by brent on 07/04/15.
  */
 public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> implements Observer {
+    private static final int DISTANCE_LIMIT=-1;
 
 
     private List<Trail> mDataset;
@@ -89,7 +90,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
     public void LoadAllTrails() {
         mMyLocation = LocationHelper.getGPS(mContext);
-        Trail.LoadAllTrails(mMyLocation, new FindCallback<Trail>() {
+        Trail.LoadAllTrails(mMyLocation, DISTANCE_LIMIT, new FindCallback<Trail>() {
             @Override
             public void done(List<Trail> trails, ParseException e) {
                 if (e==null) {
@@ -200,7 +201,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         trail.deleteInBackground(new DeleteCallback() {
             @Override
             public void done(ParseException e) {
-                Trail.LoadAllTrails(mMyLocation, new FindCallback<Trail>() {
+                Trail.LoadAllTrails(mMyLocation, DISTANCE_LIMIT, new FindCallback<Trail>() {
                     @Override
                     public void done(List<Trail> trails, ParseException e) {
                         mDataset = trails;
