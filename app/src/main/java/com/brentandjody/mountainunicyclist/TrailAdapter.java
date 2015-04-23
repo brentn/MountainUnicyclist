@@ -73,7 +73,6 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         Trail.registerForUpdates(this);
         LoadFromParse();
         LoadAllTrails();
-        mMyLocation = LocationHelper.getGPS(context);
     }
 
     @Override
@@ -89,7 +88,8 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     }
 
     public void LoadAllTrails() {
-        Trail.LoadAllTrails(new FindCallback<Trail>() {
+        mMyLocation = LocationHelper.getGPS(mContext);
+        Trail.LoadAllTrails(mMyLocation, new FindCallback<Trail>() {
             @Override
             public void done(List<Trail> trails, ParseException e) {
                 if (e==null) {
@@ -170,13 +170,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         int rating = trail.Rating(); //TODO: this should take into consideration ride ratings
         holder.mRating.setText(trail.Stars());
         float[] result = new float[3];
-        mMyLocation = LocationHelper.getGPS(mContext);
-        if (mMyLocation!=null && trail.Location()!=null) {
-            float[] distances = new float[3];
-            Location.distanceBetween(mMyLocation.latitude, mMyLocation.longitude,
-                    trail.Location().latitude, trail.Location().longitude, distances);
-            holder.mDistance.setText("approx. " + String.format("%.0f", distances[0]/1000) + " km. away");
-        } else holder.mDistance.setVisibility(View.INVISIBLE);
+        holder.mDistance.setText(trail.Distance()<0?"":"approx. "+trail.Distance()+"km away");
         holder.mRideStats.setText("Rides: 0/0");
         holder.mEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,7 +200,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         trail.deleteInBackground(new DeleteCallback() {
             @Override
             public void done(ParseException e) {
-                Trail.LoadAllTrails(new FindCallback<Trail>() {
+                Trail.LoadAllTrails(mMyLocation, new FindCallback<Trail>() {
                     @Override
                     public void done(List<Trail> trails, ParseException e) {
                         mDataset = trails;

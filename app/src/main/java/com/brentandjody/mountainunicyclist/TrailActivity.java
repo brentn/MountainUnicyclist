@@ -58,7 +58,7 @@ public class TrailActivity extends ActionBarActivity {
         mTrail = new Trail();
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
-            Trail.Load(intent.getStringExtra("trailId"), new GetCallback<Trail>() {
+            Trail.Load(intent.getStringExtra("trailId"), LocationHelper.getGPS(this), new GetCallback<Trail>() {
                 @Override
                 public void done(Trail trail, ParseException e) {
                     if (e==null) {

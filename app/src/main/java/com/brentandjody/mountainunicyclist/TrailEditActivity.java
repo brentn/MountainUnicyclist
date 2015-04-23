@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import com.brentandjody.mountainunicyclist.data.Difficulty;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -61,7 +62,7 @@ public class TrailEditActivity extends ActionBarActivity {
         okButton = (Button) findViewById(R.id.ok_button);
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
-            Trail.Load(intent.getStringExtra("trailId"), new GetCallback<Trail>() {
+            Trail.Load(intent.getStringExtra("trailId"), LocationHelper.getGPS(this), new GetCallback<Trail>() {
                 @Override
                 public void done(Trail trail, ParseException e) {
                     if (e==null) {

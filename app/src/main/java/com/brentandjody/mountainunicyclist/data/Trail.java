@@ -1,6 +1,8 @@
 package com.brentandjody.mountainunicyclist.data;
 
+import android.location.Location;
 import android.util.Log;
+import android.view.View;
 
 import com.brentandjody.mountainunicyclist.TrailAdapter;
 import com.google.android.gms.maps.model.LatLng;
@@ -13,6 +15,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -33,10 +37,11 @@ public class Trail extends ParseObject {
     private static final String PHOTO_ID = "featurephotoid";
     private static final String TRAILSYSTEM_ID = "trailsystemid";
     private static final String FLAGS = "flags";
-
     private static final int MAX_STARS = 8;
 
     private static final TrailObservable mObservable = new TrailObservable();
+
+    private int mDistance = -1;
 
     public Trail() {}
 
@@ -98,6 +103,7 @@ public class Trail extends ParseObject {
     public String TrailsystemId() {return getString(TRAILSYSTEM_ID);}
     public String PhotoId() {return getString(PHOTO_ID);}
     public Flags FLAGS() {return new Flags(getInt(FLAGS));}
+    public int Distance() {return mDistance;}
     public String Stars() {
         int count = getInt(RATING);
 
@@ -121,27 +127,66 @@ public class Trail extends ParseObject {
         query.fromLocalDatastore();
         query.getInBackground(trail_id);
     }
-    public static void Load(String trail_id, final GetCallback callback) {
+    public static void Load(String trail_id, final LatLng myLocation, final GetCallback callback) {
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
         query.getInBackground(trail_id, new GetCallback<Trail>() {
             @Override
             public void done(Trail trail, ParseException e) {
-                if (e == null) Log.d("LoadTrail", "trail loaded");
-                else Log.w("LoadTrail", e.getMessage());
+                if (e == null) {
+                    trail.calculateDistance(myLocation);
+                    Log.d("LoadTrail", "trail loaded");
+                } else Log.w("LoadTrail", e.getMessage());
                 callback.done(trail, e);
             }
         });
     }
 
-    public static void LoadAllTrails(final FindCallback<Trail> callback) {
+    public static void LoadAllTrails(final LatLng myLocation, final FindCallback<Trail> callback) {
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
-        query.findInBackground(callback);
+        query.findInBackground(new FindCallback<Trail>() {
+            @Override
+            public void done(List<Trail> list, ParseException e) {
+                for (Trail trail : list) {
+                    trail.calculateDistance(myLocation);
+                }
+                sort(list);
+                callback.done(list, e);
+            }
+        });
     }
 
     public static void registerForUpdates(Observer observer) {
         mObservable.addObserver(observer);
+    }
+
+    private void calculateDistance(LatLng myLocation) {
+        if (myLocation!=null && Location()!=null) {
+            float[] distances = new float[3];
+            Location.distanceBetween(myLocation.latitude, myLocation.longitude,
+                    Location().latitude, Location().longitude, distances);
+            mDistance=Math.round(distances[0]/1000);
+        } else mDistance=-1;
+        Log.d("Trail", "Distance Calculated from " + myLocation + " to " + Location() + ": " + mDistance + "km");
+    }
+    private int sortValue() {
+        //based on distance and trail rating
+        int rating = Rating();
+        int distance = (mDistance>=0?mDistance:50); //estimate 50km away, if unknown
+        return rating*50-distance;
+    }
+    private static void sort(List<Trail> list) {
+        if (list.size()>0) {
+            Collections.sort(list, new Comparator<Trail>() {
+                @Override
+                public int compare(Trail t1, Trail t2) {
+                    if (t1.sortValue()<t2.sortValue()) return 1;
+                    if (t1.sortValue()>t2.sortValue()) return -1;
+                    return 0;
+                }
+            });
+        }
     }
 
     private static class TrailObservable extends Observable {
