@@ -14,6 +14,8 @@ import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.UUID;
 
 /**
@@ -34,26 +36,54 @@ public class Trail extends ParseObject {
 
     private static final int MAX_STARS = 8;
 
+    private static final TrailObservable mObservable = new TrailObservable();
+
     public Trail() {}
 
-    public static Trail Create() { return (Trail)ParseObject.createWithoutData("Trail", UUID.randomUUID().toString());}
     public static ParseQuery<Trail> getQuery() { return ParseQuery.getQuery(Trail.class); }
 
-    public void setName(String name) { put(NAME, name); }
-    public void setDescription(String description) { put(DESCRIPTION, description); }
+    public void setName(String name) {
+        put(NAME, name);
+        mObservable.setChanged();
+    }
+    public void setDescription(String description) {
+        put(DESCRIPTION, description);
+        mObservable.setChanged();
+    }
     public void setLocation(LatLng location) {
         put(LAT, location.latitude);
         put(LNG, location.longitude);
+        mObservable.setChanged();
     }
     public void setRating(int rating) {
         if (rating < 0) return;
         if (rating > MAX_STARS) rating=MAX_STARS;
         put(RATING, rating);
+        mObservable.setChanged();
     }
-    public void setDifficulty(Difficulty difficulty) { put(DIFFICULTY, difficulty.toInt()); }
-    public void setTrailsystem(String trailsystem_id) { put(TRAILSYSTEM_ID, trailsystem_id);}
-    public void setPhotoId(String photo_id) { put(PHOTO_ID, photo_id); }
-    public void setFlags(Flags flags) { put(FLAGS, flags.toInt()); }
+    public void setDifficulty(Difficulty difficulty) {
+        put(DIFFICULTY, difficulty.toInt());
+        mObservable.setChanged();
+    }
+    public void setTrailsystem(String trailsystem_id) {
+        put(TRAILSYSTEM_ID, trailsystem_id);
+        mObservable.setChanged();
+    }
+    public void setPhotoId(String photo_id) {
+        put(PHOTO_ID, photo_id);
+        mObservable.setChanged();
+    }
+    public void setFlags(Flags flags) {
+        put(FLAGS, flags.toInt());
+        mObservable.setChanged();
+    }
+    public void force_update() {
+        mObservable.setChanged();
+        mObservable.notifyObservers(this);
+    }
+    public void notifyObservers() {
+        mObservable.notifyObservers(this);
+    }
 
     public String ID() {return getObjectId();}
     public String Name() {return getString(NAME);}
@@ -103,12 +133,23 @@ public class Trail extends ParseObject {
             }
         });
     }
+
     public static void LoadAllTrails(final FindCallback<Trail> callback) {
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
         query.findInBackground(callback);
     }
 
+    public static void registerForUpdates(Observer observer) {
+        mObservable.addObserver(observer);
+    }
+
+    private static class TrailObservable extends Observable {
+        @Override
+        public void setChanged() {
+            super.setChanged();
+        }
+    }
 }
 
 

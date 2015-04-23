@@ -101,19 +101,9 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail.setDescription(description.getText().toString());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
+            mTrail.saveInBackground();
+            mTrail.notifyObservers();
         }
-        final int adapterPosition = getIntent().getIntExtra("adapter_position", -1);
-        mTrail.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e==null) {
-                    Intent intent = new Intent();
-                    intent.putExtra("adapter_position", adapterPosition);
-                    intent.setAction("com.brentandjody.TrailSaved");
-                    sendBroadcast(intent);
-                } else Log.w("SaveTrail", e.getMessage());
-            }
-        });
         setResult(Activity.RESULT_OK);
         finish();
     }

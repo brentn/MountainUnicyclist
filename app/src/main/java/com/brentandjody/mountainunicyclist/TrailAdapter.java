@@ -1,6 +1,5 @@
 package com.brentandjody.mountainunicyclist;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -16,7 +15,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.brentandjody.mountainunicyclist.data.Difficulty;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
@@ -28,11 +26,13 @@ import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by brent on 07/04/15.
  */
-public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> {
+public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> implements Observer {
 
 
     private List<Trail> mDataset;
@@ -70,9 +70,22 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     public TrailAdapter(Context context) {
         mContext = context;
         mDataset = null;
+        Trail.registerForUpdates(this);
         LoadFromParse();
         LoadAllTrails();
         mMyLocation = LocationHelper.getGPS(context);
+    }
+
+    @Override
+    public void update(Observable observable, Object data) {
+        Trail updated_trail = (Trail)data;
+        if (mDataset.contains(updated_trail)) {
+            Log.d("TrailAdapter", "Updated Trail in dataset");
+        } else {
+            mDataset.add(updated_trail);
+            Log.d("TrailAdapter", "Added Trail to dataset");
+        }
+        notifyDataSetChanged();
     }
 
     public void LoadAllTrails() {
@@ -81,7 +94,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             public void done(List<Trail> trails, ParseException e) {
                 if (e==null) {
                     mDataset = trails;
-                    TrailAdapter.this.notifyDataSetChanged();
+                    notifyDataSetChanged();
                     Log.d("LoadAllTrails", "succeeded loading "+trails.size()+" trails");
                 } else Log.w("LoadAllTrails", e.getMessage());
 
@@ -100,9 +113,9 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
                     if (e==null) {
                         for (Trail trail : trails) {
                             trail.pinInBackground();
+                            trail.force_update();
                         }
                         Log.d("LoadFromParse", trails.size() + " trails downloaded from Parse.com");
-                        LoadAllTrails();
                     } else Log.w("LoadFromParse", e.getMessage());
                 }
             });
@@ -170,7 +183,6 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, TrailEditActivity.class);
                 intent.putExtra("trailId", trail.ID());
-                intent.putExtra("adapterPosition", position);
                 mContext.startActivity(intent);
             }
         });
