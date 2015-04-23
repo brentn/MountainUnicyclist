@@ -21,23 +21,32 @@ public class Difficulty {
 
     public int toInt() { return mDifficulty.ordinal();}
 
-    public int Resource() {
+    public int RadioButton() {
+        switch (mDifficulty) {
+            case NOT_SET: return -1;
+            case EASY:  return R.id.easy;
+            case MEDIUM:  return R.id.medium;
+            case DIFFICULT: return R.id.difficult;
+            case EXPERT:  return R.id.expert;
+            default: return -1;
+        }
+    }
+    public void setFromRadioButton(int resourceId) {
+        switch (resourceId) {
+            case R.id.easy: mDifficulty=LEVEL.EASY; break;
+            case R.id.medium: mDifficulty=LEVEL.MEDIUM; break;
+            case R.id.difficult: mDifficulty=LEVEL.DIFFICULT; break;
+            case R.id.expert: mDifficulty=LEVEL.EXPERT; break;
+        }
+    }
+    public int Icon() {
         switch (mDifficulty) {
             case NOT_SET: return R.drawable.transparent_pixel;
             case EASY:  return R.drawable.ic_easy;
             case MEDIUM:  return R.drawable.ic_medium;
             case DIFFICULT: return R.drawable.ic_difficult;
             case EXPERT:  return R.drawable.ic_expert;
-        }
-        return R.drawable.transparent_pixel;
-    }
-    public static Difficulty fromResource(int resourceId) {
-        switch (resourceId) {
-            case R.id.easy: return new Difficulty(0);
-            case R.id.medium: return new Difficulty(1);
-            case R.id.difficult: return new Difficulty(2);
-            case R.id.expert: return new Difficulty(3);
-            default:return new Difficulty(DEFAULT);
+            default: return R.drawable.transparent_pixel;
         }
     }
 

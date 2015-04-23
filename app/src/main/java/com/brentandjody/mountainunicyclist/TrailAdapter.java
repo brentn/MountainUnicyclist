@@ -162,7 +162,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
                 } else Log.w("TrailAdapter", e.getMessage());
             }
         });
-        holder.mDifficulty.setImageResource(trail.Difficulty().Resource());
+        holder.mDifficulty.setImageResource(trail.Difficulty().Icon());
         String trailsystem = ""; //TODO:lookup trailsystem
         holder.mTrailsystem.setText(trailsystem);
 

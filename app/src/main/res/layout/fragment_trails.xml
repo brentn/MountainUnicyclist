@@ -8,11 +8,12 @@ android:layout_height="match_parent">
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|right"
-    android:layout_margin="16dp"
-    android:src="@drawable/ic_action_content_new"
+        android:src="@drawable/ic_action_content_new"
     fab:fab_colorNormal="@color/accent"
     fab:fab_colorPressed="@color/accent_dark"
-    fab:fab_colorRipple="@color/primary" />
+    fab:fab_colorRipple="@color/primary"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="64dp" />
 
     <LinearLayout
         android:orientation="vertical"

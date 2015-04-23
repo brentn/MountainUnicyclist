@@ -96,7 +96,9 @@ public class TrailEditActivity extends ActionBarActivity {
     private void saveTrail() {
         if (mTrail !=null) {
             mTrail.setName(name.getText().toString());
-            mTrail.setDifficulty(Difficulty.fromResource(difficulty.getCheckedRadioButtonId()));
+            Difficulty d = new Difficulty();
+            d.setFromRadioButton(difficulty.getCheckedRadioButtonId());
+            mTrail.setDifficulty(d);
             mTrail.setRating(Math.round(rating.getRating()));
             mTrail.setDescription(description.getText().toString());
             //TODO:set trailsystem
@@ -138,7 +140,7 @@ public class TrailEditActivity extends ActionBarActivity {
             });
         }
         name.setText(mTrail.Name());
-        difficulty.check(mTrail.Difficulty().Resource());
+        difficulty.check(mTrail.Difficulty().RadioButton());
         rating.setRating(mTrail.Rating());
         description.setText(mTrail.Description());
         setupButtonListeners();

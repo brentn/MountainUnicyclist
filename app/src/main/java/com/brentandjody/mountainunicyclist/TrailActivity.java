@@ -87,7 +87,7 @@ public class TrailActivity extends ActionBarActivity {
         Location.distanceBetween(myLocation.latitude, myLocation.longitude,
                 mTrail.Location().latitude, mTrail.Location().longitude, distances);
         distance.setText("approx. " + String.format("%.0f", distances[0]/1000) + " km. away");
-        difficulty.setImageResource(mTrail.Difficulty().Resource());
+        difficulty.setImageResource(mTrail.Difficulty().Icon());
         rating.setText(mTrail.Stars());
         description.setText(mTrail.Description());
         //TODO:trailsystem
