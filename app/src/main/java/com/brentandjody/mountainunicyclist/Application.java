@@ -17,6 +17,7 @@ import java.util.Observer;
 public class Application extends android.app.Application{
     static final int NEW_LOCATION = 1;
     static final int EDIT_TRAIL = 2;
+    static final int GET_PHOTO = 3;
 
     @Override
     public void onCreate()

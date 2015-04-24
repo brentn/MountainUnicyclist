@@ -19,6 +19,7 @@ import java.util.UUID;
 
 /**
  * Created by brent on 10/04/15.
+ * Photo class that synchs with Parse.com
  */
 @ParseClassName("Photo")
 public class Photo extends ParseObject {
@@ -32,7 +33,6 @@ public class Photo extends ParseObject {
     public Photo() {
     }
 
-    public static Photo Create() { return (Photo)ParseObject.createWithoutData("Photo", UUID.randomUUID().toString());}
     public static ParseQuery<Photo> getQuery() { return ParseQuery.getQuery(Photo.class); }
 
     public void setOwnerId(String owner) { put(OWNER_ID, owner);}
@@ -54,22 +54,9 @@ public class Photo extends ParseObject {
     public String ID() { return getObjectId(); }
     public String OwnerId() { return getString(OWNER_ID); }
     public String DominantColor() { return getString(DOMINANT_COLOR); }
-//    public byte[] Data() {
-//        ParseFile file = getParseFile(IMAGE_FILE);
-//        try { return file.getData(); } //this is too much for the main thread
-//        catch(Exception e) {
-//    }
+
     public Flags FLAGS() { return new Flags(getInt(FLAGS)); }
 
-    public void Save() {
-        saveEventually(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) Log.d("SavePhoto", "photo saved");
-                else Log.w("SavePhoto", e.getMessage());
-            }
-        });
-    }
     public void Load(String photo_id) {
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();

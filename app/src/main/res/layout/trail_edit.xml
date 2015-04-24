@@ -196,7 +196,16 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/photos"
-                    android:minHeight="96dp"></LinearLayout>
+                    android:minHeight="96dp"
+                    android:gravity="center_vertical|left">
+
+                    <ImageView
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:id="@+id/add_photo_button"
+                        android:src="@mipmap/ic_add_photo"
+                        android:scaleType="centerCrop" />
+                </LinearLayout>
             </HorizontalScrollView>
 
             <FrameLayout

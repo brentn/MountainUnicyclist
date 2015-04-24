@@ -2,18 +2,14 @@ package com.brentandjody.mountainunicyclist.data;
 
 import android.location.Location;
 import android.util.Log;
-import android.view.View;
 
-import com.brentandjody.mountainunicyclist.TrailAdapter;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.GetDataCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +17,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.UUID;
 
 /**
  * Created by brent on 10/04/15.
+ * Trail class that synchs with Parse.com
  */
 @ParseClassName("Trail")
 public class Trail extends ParseObject {
@@ -163,6 +159,7 @@ public class Trail extends ParseObject {
         mObservable.addObserver(observer);
     }
 
+    // Private methods
     private void calculateDistance(LatLng myLocation) {
         if (myLocation!=null && Location()!=null) {
             float[] distances = new float[3];

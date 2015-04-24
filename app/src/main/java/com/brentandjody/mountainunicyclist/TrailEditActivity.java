@@ -1,8 +1,17 @@
 package com.brentandjody.mountainunicyclist;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,6 +37,11 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.SaveCallback;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -46,6 +60,8 @@ public class TrailEditActivity extends ActionBarActivity {
     private LinearLayout photo_picker;
     private ImageButton locationButton;
     private Button okButton;
+    private ImageView addPhotoButton;
+    private Uri mOutputFileUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +76,7 @@ public class TrailEditActivity extends ActionBarActivity {
         photo_picker = (LinearLayout) findViewById(R.id.photos);
         locationButton = (ImageButton) findViewById(R.id.location_picker_button);
         okButton = (Button) findViewById(R.id.ok_button);
+        addPhotoButton = (ImageView) findViewById(R.id.add_photo_button);
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
             Trail.Load(intent.getStringExtra("trailId"), LocationHelper.getGPS(this), new GetCallback<Trail>() {
@@ -163,6 +180,12 @@ public class TrailEditActivity extends ActionBarActivity {
                 saveTrail();
             }
         });
+        addPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openImageIntent();
+            }
+        });
     }
 
     private void setupTrailsystem() {
@@ -173,7 +196,7 @@ public class TrailEditActivity extends ActionBarActivity {
         Photo.LoadImagesForOwner(mTrail.ID(), new FindCallback<Photo>() {
             @Override
             public void done(List<Photo> photos, ParseException e) {
-                if (e==null) {
+                if (e == null) {
                     for (Photo photo : photos) {
                         ImageView iv = new ImageView(getApplication());
                         iv.setTag(photo.ID());
@@ -210,7 +233,8 @@ public class TrailEditActivity extends ActionBarActivity {
                 mTrail.setPhotoId((String) v.getTag());
             }
         });
-        photo_picker.addView(iv);
+        int pos = photo_picker.getChildCount()-1;
+        photo_picker.addView(iv, pos);
         photo_picker.getParent().requestLayout();
     }
 
@@ -252,7 +276,98 @@ public class TrailEditActivity extends ActionBarActivity {
                     Log.d("LONGITUDE", mTrail.Location().longitude+"");
                 }
             }
+            case Application.GET_PHOTO: {
+                if (resultCode == RESULT_OK) {
+                    final boolean isCamera;
+                    if (data == null) {
+                        isCamera = true;
+                    } else {
+                        final String action = data.getAction();
+                        if (action == null) {
+                            isCamera = false;
+                        } else {
+                            isCamera = action.equals(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        }
+                    }
+
+                    byte[] image=null;
+                    if (isCamera) {
+                        image=uriToByte(mOutputFileUri);
+                    } else {
+                        if (data!=null)
+                            image=uriToByte(data.getData());
+                    }
+                    if (image!=null) {  //to get ID
+                        final Photo photo = new Photo();
+                        final byte[] img=image;
+                        photo.setOwnerId(mTrail.ID());
+                        photo.setData(image);
+                        photo.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    addImageToPhotoPicker(img, photo.ID());
+                                    Log.d("SaveNewPhoto", "Saved");
+                                } else Log.e("SaveNewPhoto", e.getMessage());
+                            }
+                        });
+                    }
+
+                }
+            }
         }
     }
+
+    private void openImageIntent() {
+
+        // Determine Uri of camera image to save.
+        final File root = new File(Environment.getExternalStorageDirectory() + File.separator + "MyDir" + File.separator);
+        root.mkdirs();
+        final File sdImageMainDirectory = new File(root, "img_"+System.currentTimeMillis()+".jpg");
+        mOutputFileUri = Uri.fromFile(sdImageMainDirectory);
+
+        // Camera.
+        final List<Intent> cameraIntents = new ArrayList<Intent>();
+        final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        final PackageManager packageManager = getPackageManager();
+        final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
+        for(ResolveInfo res : listCam) {
+            final String packageName = res.activityInfo.packageName;
+            final Intent intent = new Intent(captureIntent);
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            intent.setPackage(packageName);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, mOutputFileUri);
+            cameraIntents.add(intent);
+        }
+
+        // Filesystem.
+        final Intent galleryIntent = new Intent();
+        galleryIntent.setType("image/*");
+        galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+        // Chooser of filesystem options.
+        final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
+
+        // Add the camera options.
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[cameraIntents.size()]));
+
+        startActivityForResult(chooserIntent, ((Application)getApplication()).GET_PHOTO);
+    }
+
+    private byte[] uriToByte(Uri uri){
+        byte[] data = null;
+        try {
+            ContentResolver cr = getBaseContext().getContentResolver();
+            InputStream inputStream = cr.openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            data = baos.toByteArray();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
 
 }
