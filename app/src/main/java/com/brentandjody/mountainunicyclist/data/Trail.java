@@ -24,7 +24,6 @@ import java.util.Observer;
  */
 @ParseClassName("Trail")
 public class Trail extends ParseObject {
-    private static final String ID = "objectId"; //don't change this name
     private static final String NAME = "name";
     private static final String DESCRIPTION = "description";
     private static final String LAT = "latitude";
@@ -39,6 +38,7 @@ public class Trail extends ParseObject {
     private static final TrailObservable mObservable = new TrailObservable();
 
     private int mDistance = -1;
+    private String mFeaturedPhotoId=null;
 
     public Trail() {}
 
@@ -72,7 +72,7 @@ public class Trail extends ParseObject {
         mObservable.setChanged();
     }
     public void setPhotoId(String photo_id) {
-        put(PHOTO_ID, photo_id);
+        mFeaturedPhotoId = photo_id;
         mObservable.setChanged();
     }
     public void setFlags(Flags flags) {
@@ -98,7 +98,11 @@ public class Trail extends ParseObject {
     public int Rating() {return getInt(RATING);}
     public Difficulty Difficulty() {return new Difficulty(getInt(DIFFICULTY));}
     public String TrailsystemId() {return getString(TRAILSYSTEM_ID);}
-    public String PhotoId() {return getString(PHOTO_ID);}
+    public String PhotoId() {
+        if (mFeaturedPhotoId==null)
+            mFeaturedPhotoId = Photo.RandomImageOf(ID());
+        return mFeaturedPhotoId;
+    }
     public Flags FLAGS() {return new Flags(getInt(FLAGS));}
     public int Distance() {return mDistance;}
     public String Stars() {

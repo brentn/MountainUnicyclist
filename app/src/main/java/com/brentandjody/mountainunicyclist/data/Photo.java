@@ -42,7 +42,7 @@ public class Photo extends ParseObject {
         file.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e==null) {
+                if (e == null) {
                     put(IMAGE_FILE, file);
                     saveEventually();
                     Log.d("setData", "Image file saved");
@@ -85,7 +85,7 @@ public class Photo extends ParseObject {
         file.getDataInBackground(new GetDataCallback() {
             @Override
             public void done(byte[] bytes, ParseException e) {
-                if (e==null) {
+                if (e == null) {
                     imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
                     Log.d("LoadInto", "ImageView loaded with image data");
                 } else Log.w("LoadInto", e.getMessage());
@@ -98,7 +98,7 @@ public class Photo extends ParseObject {
         query.getInBackground(photo_id, new GetCallback<Photo>() {
             @Override
             public void done(Photo photo, ParseException e) {
-                if (e==null) {
+                if (e == null) {
                     ParseFile file = photo.getParseFile(IMAGE_FILE);
                     file.getDataInBackground(photo_data_callback);
                     Log.d("LoadImage", "photo object loaded");
@@ -112,6 +112,17 @@ public class Photo extends ParseObject {
         query.whereEqualTo(OWNER_ID, owner_id);
         query.findInBackground(callback);
     }
+
+    public static String RandomImageOf(String owner_id){
+        ParseQuery<Photo> query = getQuery();
+        query.fromLocalDatastore();
+        query.whereEqualTo(OWNER_ID, owner_id);
+        String result;
+        try { result = query.getFirst().ID(); }
+        catch(Exception ex) { result = null; }
+        return result;
+    }
+
     public static void Delete(String id) {
         ParseQuery<Photo> query = Photo.getQuery();
         query.fromLocalDatastore();

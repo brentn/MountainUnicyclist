@@ -1,12 +1,11 @@
 <resources>
+    <string name="app_label">Mountain Uni</string>
     <string name="app_name">Mountain Unicyclist</string>
 
 
     <string name="title_section1">Locations</string>
     <string name="title_section2">Rides</string>
     <string name="title_section3">People</string>
-
-    <string name="hello_world">Hello world!</string>
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_location">Trail</string>
@@ -26,7 +25,7 @@
     <string name="rating">Rating</string>
     <string name="trail_name">Trail Name</string>
     <string name="trailsystem">Trailsystem</string>
-    <string name="title_activity_trail">TrailActivity</string>
+    <string name="title_activity_trail">Trails</string>
     <string name="photos">Photos</string>
     <string name="comments">Comments</string>
     <string name="edit">Edit</string>

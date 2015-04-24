@@ -14,7 +14,7 @@
     fab:fab_colorNormal="@color/primary"
     fab:fab_colorPressed="@color/primary_dark"
     fab:fab_colorRipple="@color/ripple"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="64dp"
         android:layout_marginRight="16dp" />
 
     <LinearLayout
