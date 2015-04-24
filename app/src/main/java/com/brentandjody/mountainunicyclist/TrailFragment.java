@@ -13,12 +13,12 @@ import android.view.ViewGroup;
 
 import com.melnykov.fab.FloatingActionButton;
 
-public class PlacesFragment extends Fragment {
+public class TrailFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TrailAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    public PlacesFragment() {
+    public TrailFragment() {
     }
 
     @Override

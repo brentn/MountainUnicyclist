@@ -1,42 +1,19 @@
 package com.brentandjody.mountainunicyclist;
 
-import java.util.List;
 import java.util.Locale;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.ImageView;
 
-import com.brentandjody.mountainunicyclist.data.DBContract;
-import com.brentandjody.mountainunicyclist.data.Flags;
-import com.brentandjody.mountainunicyclist.data.Photo;
-import com.brentandjody.mountainunicyclist.data.Trail;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.melnykov.fab.FloatingActionButton;
-import com.parse.FindCallback;
-import com.parse.ParseAnonymousUtils;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -113,12 +90,12 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0:return new PlacesFragment();
+                case 0:return new TrailFragment();
                 case 1:return new RidesFragment();
                 case 2:return new PeopleFragment();
             }
 
-            return new PlacesFragment();
+            return new TrailFragment();
         }
 
         @Override

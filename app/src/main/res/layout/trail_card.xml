@@ -154,7 +154,8 @@
                 android:textColor="@color/primary_dark"
                 android:clickable="true"
                 android:padding="12dp"
-                android:layout_gravity="right" />
+                android:layout_gravity="right"
+                android:visibility="invisible" />
 
         </FrameLayout>
 

@@ -162,7 +162,8 @@
             android:id="@+id/edit_button"
             android:textColor="@color/primary_dark"
             android:clickable="true"
-            android:padding="12dp" />
+            android:padding="12dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

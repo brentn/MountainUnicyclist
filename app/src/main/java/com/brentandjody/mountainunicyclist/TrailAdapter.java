@@ -51,7 +51,6 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         public TextView mRideStats;
         public ImageView mPhoto;
         public ImageView mDifficulty;
-        public TextView mEditBtn;
         public ViewHolder(View v) {
             super(v);
             mCard = v;
@@ -64,7 +63,6 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             mTrailsystem = (TextView) v.findViewById(R.id.trailsystem);
             mDescription = (TextView) v.findViewById(R.id.description);
             mRideStats = (TextView) v.findViewById(R.id.rides);
-            mEditBtn = (TextView) v.findViewById(R.id.edit_button);
         }
     }
 
@@ -173,14 +171,6 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         float[] result = new float[3];
         holder.mDistance.setText(trail.Distance()<0?"":"approx. "+trail.Distance()+"km away");
         holder.mRideStats.setText("Rides: 0/0");
-        holder.mEditBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, TrailEditActivity.class);
-                intent.putExtra("trailId", trail.ID());
-                mContext.startActivity(intent);
-            }
-        });
         holder.mCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
