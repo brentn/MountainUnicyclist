@@ -1,5 +1,6 @@
 package com.brentandjody.mountainunicyclist.data;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.util.Log;
 
@@ -202,6 +203,8 @@ public class Trail extends ParseObject {
         }
     }
 
+
+// **Observable**
     private static class TrailObservable extends Observable {
         @Override
         public void setChanged() {

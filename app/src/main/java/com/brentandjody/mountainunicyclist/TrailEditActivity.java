@@ -102,7 +102,7 @@ public class TrailEditActivity extends ActionBarActivity {
                 }
             });
         }
-
+        setTitle(getString(R.string.edit_trail));
     }
 
     @Override

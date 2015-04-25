@@ -130,22 +130,6 @@
 
             </RadioGroup>
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/description"
-                android:layout_below="@+id/title"
-                android:layout_centerHorizontal="true"
-                android:inputType="textMultiLine|textCapSentences"
-                android:hint="@string/description"
-                android:editable="true"
-                android:lines="4"
-                android:longClickable="true"
-                android:gravity="top"
-                android:background="@color/background_floating_material_light"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp" />
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -167,6 +151,16 @@
                 style="@android:style/Widget.DeviceDefault.Light.RatingBar.Indicator"
                 android:layout_gravity="center_horizontal" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/trailsystem"
+                android:id="@+id/textView10"
+                android:textColor="@color/secondary_text"
+                android:paddingLeft="8dp"
+                android:paddingTop="12dp" />
+
             <Spinner
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -174,6 +168,31 @@
                 android:layout_gravity="center_horizontal"
                 android:prompt="@id/trailsystem"
                 android:layout_marginTop="12dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/description"
+                android:id="@+id/textView8"
+                android:textColor="@color/secondary_text"
+                android:paddingLeft="8dp"
+                android:paddingTop="12dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/description"
+                android:layout_below="@+id/title"
+                android:layout_centerHorizontal="true"
+                android:inputType="textMultiLine|textCapSentences"
+                android:editable="true"
+                android:lines="4"
+                android:longClickable="true"
+                android:gravity="top"
+                android:background="@color/background_floating_material_light"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -227,6 +246,7 @@
                     android:focusable="true" />
 
             </FrameLayout>
+
         </LinearLayout>
     </ScrollView>
 

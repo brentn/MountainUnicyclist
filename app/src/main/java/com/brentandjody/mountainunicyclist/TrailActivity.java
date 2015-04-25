@@ -3,11 +3,15 @@ package com.brentandjody.mountainunicyclist;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,6 +58,12 @@ public class TrailActivity extends ActionBarActivity {
         ridesButton = (TextView) findViewById(R.id.rides_button);
         featuresButton = (TextView) findViewById(R.id.features_button);
         mTrail = new Trail();
+        View titlebar = findViewById(R.id.titlebar);
+        ((ViewGroup) titlebar.getParent()).removeView(titlebar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(titlebar);
+
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
             Trail.Load(intent.getStringExtra("trailId"), LocationHelper.getGPS(this), new GetCallback<Trail>() {
