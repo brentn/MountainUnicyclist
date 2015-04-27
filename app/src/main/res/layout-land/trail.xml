@@ -140,7 +140,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="96dp"
                         android:id="@+id/photo_picker"
-                        android:background="@color/ratingbar_background">
+                        android:background="@color/translucent">
 
                         <LinearLayout
                             android:orientation="horizontal"
@@ -192,7 +192,7 @@
             android:layout_alignBottom="@+id/feature_photo"
             android:padding="8dp"
             android:id="@+id/ratingbar"
-            android:background="@color/ratingbar_background"
+            android:background="@color/translucent"
             android:elevation="1dp">
 
             <TextView

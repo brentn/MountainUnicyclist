@@ -1,5 +1,7 @@
 package com.brentandjody.mountainunicyclist;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -11,21 +13,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.brentandjody.mountainunicyclist.data.Photo;
+import com.brentandjody.mountainunicyclist.data.PhotoPicker;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
-
-import java.util.List;
 
 
 public class TrailActivity extends ActionBarActivity {
@@ -37,7 +37,7 @@ public class TrailActivity extends ActionBarActivity {
     private TextView rating;
     private TextView description;
     private TextView trailsystem;
-    private LinearLayout photo_picker;
+    private PhotoPicker photoPicker;
     private TextView commentsButton;
     private TextView ridesButton;
     private TextView featuresButton;
@@ -53,7 +53,7 @@ public class TrailActivity extends ActionBarActivity {
         rating = (TextView) findViewById(R.id.rating);
         description = (TextView) findViewById(R.id.description);
         trailsystem = (TextView) findViewById(R.id.trailsystem);
-        photo_picker = (LinearLayout) findViewById(R.id.photos);
+        photoPicker = new PhotoPicker(this, (LinearLayout) findViewById(R.id.photos));
         commentsButton = (TextView) findViewById(R.id.add_comment_button);
         ridesButton = (TextView) findViewById(R.id.rides_button);
         featuresButton = (TextView) findViewById(R.id.features_button);
@@ -99,23 +99,8 @@ public class TrailActivity extends ActionBarActivity {
         rating.setText(mTrail.Stars());
         description.setText(mTrail.Description());
         //TODO:trailsystem
-        setupPhotoPicker();
-    }
-
-    private void setupPhotoPicker() {
-        Photo.LoadImagesForOwner(mTrail.ID(), new FindCallback<Photo>() {
-            @Override
-            public void done(List<Photo> photos, ParseException e) {
-                if (e==null) {
-                    for (Photo photo : photos) {
-                        ImageView iv = new ImageView(getApplication());
-                        iv.setMaxHeight(96);
-                        photo.LoadInto(iv);
-                        photo_picker.addView(iv);
-                    }
-                } else Log.w("SetupPhotoPicker()", e.getMessage());
-            }
-        });
+        photoPicker.setup(mTrail.ID());
+        photoPicker.select(mTrail.PhotoId());
     }
 
     @Override
@@ -139,7 +124,19 @@ public class TrailActivity extends ActionBarActivity {
                 startActivity(intent);
                 return true;
             case (R.id.action_delete):
-                //TODO: confirm and delete trail
+                new AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.delete_trail))
+                    .setMessage(getString(R.string.confirm_delete_trail))
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                            try {
+                                mTrail.delete();
+                                Toast.makeText(TrailActivity.this, "trail deleted", Toast.LENGTH_SHORT).show();
+                            } catch (ParseException ex) {}
+                        }
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
                 return true;
         }
 

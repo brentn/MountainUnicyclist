@@ -1,8 +1,10 @@
 package com.brentandjody.mountainunicyclist;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -15,6 +17,7 @@ import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,10 +32,10 @@ import android.widget.Spinner;
 
 import com.brentandjody.mountainunicyclist.data.Difficulty;
 import com.brentandjody.mountainunicyclist.data.Photo;
+import com.brentandjody.mountainunicyclist.data.PhotoPicker;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.SaveCallback;
@@ -47,9 +50,6 @@ import java.util.List;
 
 public class TrailEditActivity extends ActionBarActivity {
 
-    private static LinearLayout.LayoutParams unselected = new LinearLayout.LayoutParams(96, LinearLayout.LayoutParams.WRAP_CONTENT);
-    private static LinearLayout.LayoutParams selected = new LinearLayout.LayoutParams(128, LinearLayout.LayoutParams.WRAP_CONTENT);
-
     private Trail mTrail = null;
     private boolean mIsNewImage =false;
     private EditText name;
@@ -57,11 +57,12 @@ public class TrailEditActivity extends ActionBarActivity {
     private RatingBar rating;
     private EditText description;
     private Spinner trailsystem;
-    private LinearLayout photo_picker;
     private ImageButton locationButton;
     private Button okButton;
     private ImageView addPhotoButton;
     private Uri mOutputFileUri;
+    private ImageView mSelectedPhoto;
+    private PhotoPicker mPhotoPicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,10 +74,10 @@ public class TrailEditActivity extends ActionBarActivity {
         rating = (RatingBar) findViewById(R.id.rating);
         description = (EditText) findViewById(R.id.description);
         trailsystem = (Spinner) findViewById(R.id.trailsystem);
-        photo_picker = (LinearLayout) findViewById(R.id.photos);
         locationButton = (ImageButton) findViewById(R.id.location_picker_button);
         okButton = (Button) findViewById(R.id.ok_button);
         addPhotoButton = (ImageView) findViewById(R.id.add_photo_button);
+        mPhotoPicker = new PhotoPicker(this, (LinearLayout)findViewById(R.id.photos));
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
             Trail.Load(intent.getStringExtra("trailId"), LocationHelper.getGPS(this), new GetCallback<Trail>() {
@@ -145,13 +146,12 @@ public class TrailEditActivity extends ActionBarActivity {
             photo.setData(image);
             photo.setOwnerId(mTrail.ID());
             if (intent.hasExtra("isTemporaryPhoto")) photo.FLAGS().setTemporary();
-            setupPhotoPicker();
             photo.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
                         mTrail.setPhotoId(photo.ID());
-                        addImageToPhotoPicker(image, photo.ID());
+                        mPhotoPicker.addImage(image, photo.ID());
                         Log.d("SetupViews", "Photo saved");
                     } else Log.w("SetupViews", e.getMessage());
                 }
@@ -161,6 +161,7 @@ public class TrailEditActivity extends ActionBarActivity {
         difficulty.check(mTrail.Difficulty().RadioButton());
         rating.setRating(mTrail.Rating());
         description.setText(mTrail.Description());
+        mPhotoPicker.setup(mTrail.ID());
         setupButtonListeners();
         setupTrailsystem();
     }
@@ -192,58 +193,7 @@ public class TrailEditActivity extends ActionBarActivity {
         //TODO: fill trailsystem dropdown
     }
 
-    private void setupPhotoPicker() {
-        Photo.LoadImagesForOwner(mTrail.ID(), new FindCallback<Photo>() {
-            @Override
-            public void done(List<Photo> photos, ParseException e) {
-                if (e == null) {
-                    for (Photo photo : photos) {
-                        ImageView iv = new ImageView(getApplication());
-                        iv.setTag(photo.ID());
-                        if (mTrail.PhotoId() == photo.ID()) {
-                            markSelected(iv);
-                        } else {
-                            iv.setLayoutParams(unselected);
-                        }
-                        iv.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                markSelected((ImageView) v);
-                                mTrail.setPhotoId((String) v.getTag());
-                            }
-                        });
-                        photo_picker.addView(iv);
-                    }
-                } else Log.w("SetupPhotoPicker()", e.getMessage());
-            }
-        });
-    }
 
-    private void addImageToPhotoPicker(byte[] image, String id) {
-        ImageView iv = new ImageView(getApplication());
-        iv.setImageBitmap(BitmapFactory.decodeByteArray(image, 0, image.length));
-        iv.setTag(id);
-        if (mTrail.PhotoId() == id) {
-            markSelected(iv);
-        }
-        iv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                markSelected((ImageView) v);
-                mTrail.setPhotoId((String) v.getTag());
-            }
-        });
-        int pos = photo_picker.getChildCount()-1;
-        photo_picker.addView(iv, pos);
-        photo_picker.getParent().requestLayout();
-    }
-
-    private void markSelected(ImageView iv) {
-        for (int i = 0; i<photo_picker.getChildCount(); i++) {
-            ((ImageView)photo_picker.getChildAt(i)).setLayoutParams(unselected);
-        }
-        iv.setLayoutParams(selected);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -265,6 +215,36 @@ public class TrailEditActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        if (v instanceof ImageView) {
+            mSelectedPhoto = (ImageView) v;
+            getMenuInflater().inflate(R.menu.menu_photo, menu);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_delete:
+                new AlertDialog.Builder(TrailEditActivity.this)
+                        .setTitle(getString(R.string.delete_photo))
+                        .setMessage(getString(R.string.confirm_delete_photo))
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Photo.Delete((String) mSelectedPhoto.getTag());
+                                mPhotoPicker.removeView(mSelectedPhoto);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null).show();
+                return true;
+        }
+        return super.onContextItemSelected(item);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -302,11 +282,12 @@ public class TrailEditActivity extends ActionBarActivity {
                         final byte[] img=image;
                         photo.setOwnerId(mTrail.ID());
                         photo.setData(image);
+                        photo.pinInBackground();
                         photo.saveInBackground(new SaveCallback() {
                             @Override
                             public void done(ParseException e) {
                                 if (e == null) {
-                                    addImageToPhotoPicker(img, photo.ID());
+                                    mPhotoPicker.addImage(img, photo.ID());
                                     Log.d("SaveNewPhoto", "Saved");
                                 } else Log.e("SaveNewPhoto", e.getMessage());
                             }

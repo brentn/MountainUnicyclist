@@ -1,6 +1,5 @@
 package com.brentandjody.mountainunicyclist.data;
 
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.util.Log;
 
@@ -40,6 +39,7 @@ public class Trail extends ParseObject {
 
     private int mDistance = -1;
     private String mFeaturedPhotoId=null;
+    private Flags mFlags;
 
     public Trail() {}
 
@@ -76,10 +76,6 @@ public class Trail extends ParseObject {
         mFeaturedPhotoId = photo_id;
         mObservable.setChanged();
     }
-    public void setFlags(Flags flags) {
-        put(FLAGS, flags.toInt());
-        mObservable.setChanged();
-    }
     public void force_update() {
         mObservable.setChanged();
         mObservable.notifyObservers(this);
@@ -104,8 +100,11 @@ public class Trail extends ParseObject {
             mFeaturedPhotoId = Photo.RandomImageOf(ID());
         return mFeaturedPhotoId;
     }
-    public Flags FLAGS() {return new Flags(getInt(FLAGS));}
     public int Distance() {return mDistance;}
+    public boolean isDeleted() {
+        if (mFlags==null) mFlags=new Flags();
+        return mFlags.isDeleted();
+    }
     public String Stars() {
         int count = getInt(RATING);
 
@@ -122,6 +121,14 @@ public class Trail extends ParseObject {
             x++;
         }
         return result;
+    }
+
+    public void Delete() {
+        //Mark a trail as deleted and remove it from the trail list
+        Flags flags = new Flags(getInt(FLAGS));
+        flags.setDeleted();
+        put(FLAGS, flags.toInt());
+        force_update();
     }
 
     public void Load(String trail_id) {
@@ -145,17 +152,22 @@ public class Trail extends ParseObject {
     }
 
     public static void LoadAllTrails(final LatLng myLocation, final int distance, final FindCallback<Trail> callback) {
+        //Load a list of all trails, except those marked as deleted,
+        //calculate the distance, and sort them by (distance & rating)
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
         query.findInBackground(new FindCallback<Trail>() {
             @Override
-            public void done(List<Trail> list, ParseException e) {
-                for (Trail trail : list) {
-                    trail.calculateDistance(myLocation);
+            public void done(List<Trail> trails, ParseException e) {
+                List<Trail> removable = new ArrayList<Trail>();
+                for (Trail trail : trails) {
+                    if (trail.isDeleted()) removable.add(trail);
+                    else trail.calculateDistance(myLocation);
                 }
-                if (distance > 0) limit(list, distance);
-                sort(list);
-                callback.done(list, e);
+                trails.removeAll(removable);
+                if (distance > 0) limit(trails, distance);
+                sort(trails);
+                callback.done(trails, e);
             }
         });
     }
@@ -211,6 +223,7 @@ public class Trail extends ParseObject {
             super.setChanged();
         }
     }
+
 }
 
 

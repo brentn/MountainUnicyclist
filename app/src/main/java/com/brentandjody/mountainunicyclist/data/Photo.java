@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.parse.CountCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
@@ -15,6 +16,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
+import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -69,7 +72,7 @@ public class Photo extends ParseObject {
             }
         });
     }
-    public void Load(String photo_id, final GetDataCallback photo_data_callback) {
+    public static void Load(String photo_id, final GetDataCallback photo_data_callback) {
         ParseQuery<Photo> query = getQuery();
         query.fromLocalDatastore();
         query.getInBackground(photo_id, new GetCallback<Photo>() {
@@ -113,14 +116,47 @@ public class Photo extends ParseObject {
         query.findInBackground(callback);
     }
 
+    public static void LoadRandomImageInto(final ImageView imageView) {
+        ParseQuery<Photo> query = getQuery();
+        query.fromLocalDatastore();
+        query.findInBackground(new FindCallback<Photo>() {
+            @Override
+            public void done(List<Photo> photos, ParseException e) {
+                if (e==null) {
+                    Random rand = new Random();
+                    int index = rand.nextInt(photos.size());
+                    Photo photo = photos.get(index);
+                    ParseFile file = photo.getParseFile(IMAGE_FILE);
+                    file.getDataInBackground(new GetDataCallback() {
+                        @Override
+                        public void done(byte[] bytes, ParseException e) {
+                            if (e==null)
+                                imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                            else Log.w("LoadRandomImageInto", "error loading photo data: "+e.getMessage());
+                        }
+                    });
+                } else Log.w("LoadRandomImageInto", "error loading photo: " + e.getMessage());
+            }
+        });
+    }
+
     public static String RandomImageOf(String owner_id){
         ParseQuery<Photo> query = getQuery();
         query.fromLocalDatastore();
         query.whereEqualTo(OWNER_ID, owner_id);
         String result;
-        try { result = query.getFirst().ID(); }
+        try {
+            List<Photo> photos = query.find();
+            Random rand = new Random();
+            int index = rand.nextInt(photos.size());
+            result = photos.get(index).ID();
+        }
         catch(Exception ex) { result = null; }
         return result;
+    }
+
+    public void Delete() {
+        Photo.Delete(ID());
     }
 
     public static void Delete(String id) {

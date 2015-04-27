@@ -10,8 +10,12 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.astuetz.PagerSlidingTabStrip;
+import com.brentandjody.mountainunicyclist.data.Photo;
+import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -28,6 +32,8 @@ public class MainActivity extends ActionBarActivity {
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
+    KenBurnsView mHeaderPicture;
+    PagerSlidingTabStrip mTabStrip;
     ImageView mSplashScreen;
 
     @Override
@@ -41,6 +47,10 @@ public class MainActivity extends ActionBarActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        KenBurnsView mHeaderPicture = (KenBurnsView) findViewById(R.id.header_picture);
+        Photo.LoadRandomImageInto(mHeaderPicture);
+        mTabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        mTabStrip.setViewPager(mViewPager);
         AdView mAdView =  (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -52,14 +62,6 @@ public class MainActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -76,6 +78,16 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    public void scrollHeader(int dy) {
+        if (mHeaderPicture != null && mTabStrip!=null) {
+            mHeaderPicture.setTranslationY(mHeaderPicture.getTranslationY() - (dy / 2));
+            mTabStrip.setTranslationY(mTabStrip.getTranslationY() - dy);
+            if (mHeaderPicture.getTranslationY() > 0)
+                mHeaderPicture.setTranslationY(0);  // this re-orients
+            if (mTabStrip.getTranslationY() > 0) mTabStrip.setTranslationY(0);
+        }
+    }
 
 
 

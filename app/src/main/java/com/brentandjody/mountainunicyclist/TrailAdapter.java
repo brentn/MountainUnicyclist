@@ -3,6 +3,7 @@ package com.brentandjody.mountainunicyclist;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -76,12 +77,20 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
     @Override
     public void update(Observable observable, Object data) {
+        if (mDataset==null) return;
         Trail updated_trail = (Trail)data;
-        if (mDataset.contains(updated_trail)) {
-            Log.d("TrailAdapter", "Updated Trail in dataset");
+        if (updated_trail.isDeleted()) {
+            if (mDataset.contains(updated_trail)) {
+                mDataset.remove(updated_trail);
+                Log.d("TrailAdapter", "Trail deleted from dataset");
+            }
         } else {
-            mDataset.add(updated_trail);
-            Log.d("TrailAdapter", "Added Trail to dataset");
+            if (mDataset.contains(updated_trail)) {
+                Log.d("TrailAdapter", "Updated Trail in dataset");
+            } else {
+                mDataset.add(updated_trail);
+                Log.d("TrailAdapter", "Added Trail to dataset");
+            }
         }
         notifyDataSetChanged();
     }
@@ -91,10 +100,10 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
         Trail.LoadAllTrails(mMyLocation, DISTANCE_LIMIT, new FindCallback<Trail>() {
             @Override
             public void done(List<Trail> trails, ParseException e) {
-                if (e==null) {
+                if (e == null) {
                     mDataset = trails;
                     notifyDataSetChanged();
-                    Log.d("LoadAllTrails", "succeeded loading "+trails.size()+" trails");
+                    Log.d("LoadAllTrails", "succeeded loading " + trails.size() + " trails");
                 } else Log.w("LoadAllTrails", e.getMessage());
 
             }
@@ -141,50 +150,56 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        final Trail trail = mDataset.get(position);
-        if (trail.Name()==null) {
-            removeTrail(trail);
-            return;
-        }
-        final ImageView featured_image = holder.mPhoto;
-        if (trail.Name().isEmpty()) holder.mTitle.setText(mContext.getString(R.string.trail));
-        else holder.mTitle.setText(trail.Name());
-        holder.mDescription.setText(trail.Description());
-        holder.mPhoto.setImageBitmap(null);
-        //indirect values
-        Photo.LoadImage(trail.PhotoId(), new GetDataCallback() {
-            @Override
-            public void done(byte[] bytes, ParseException e) {
-                if (e == null) {
-                    featured_image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                    Log.d("TrailAdapter", "featured image loaded");
-                } else Log.w("TrailAdapter", e.getMessage());
+        if (position==0) { //header
+            holder.mCard.setMinimumHeight((int)mContext.getResources().getDimension(R.dimen.header_image_height));
+            ((ViewGroup)holder.mCard).removeAllViews();
+            holder.mCard.setBackgroundColor(Color.TRANSPARENT);
+        } else {
+            final Trail trail = mDataset.get(position-1);
+            if (trail.Name() == null) {
+                removeTrail(trail);
+                return;
             }
-        });
-        holder.mDifficulty.setImageResource(trail.Difficulty().Icon());
-        String trailsystem = ""; //TODO:lookup trailsystem
-        holder.mTrailsystem.setText(trailsystem);
+            final ImageView featured_image = holder.mPhoto;
+            if (trail.Name().isEmpty()) holder.mTitle.setText(mContext.getString(R.string.trail));
+            else holder.mTitle.setText(trail.Name());
+            holder.mDescription.setText(trail.Description());
+            holder.mPhoto.setImageBitmap(null);
+            //indirect values
+            Photo.LoadImage(trail.PhotoId(), new GetDataCallback() {
+                @Override
+                public void done(byte[] bytes, ParseException e) {
+                    if (e == null) {
+                        featured_image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                        Log.d("TrailAdapter", "featured image loaded");
+                    } else Log.w("TrailAdapter", e.getMessage());
+                }
+            });
+            holder.mDifficulty.setImageResource(trail.Difficulty().Icon());
+            String trailsystem = ""; //TODO:lookup trailsystem
+            holder.mTrailsystem.setText(trailsystem);
 
-        //calculated or processed values
-        int rating = trail.Rating(); //TODO: this should take into consideration ride ratings
-        holder.mRating.setText(trail.Stars());
-        float[] result = new float[3];
-        holder.mDistance.setText(trail.Distance()<0?"":"approx. "+trail.Distance()+"km away");
-        holder.mRideStats.setText("Rides: 0/0");
-        holder.mCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mContext, TrailActivity.class );
-                intent.putExtra("trailId", trail.ID());
-                mContext.startActivity(intent);
-            }
-        });
+            //calculated or processed values
+            int rating = trail.Rating(); //TODO: this should take into consideration ride ratings
+            holder.mRating.setText(trail.Stars());
+            float[] result = new float[3];
+            holder.mDistance.setText(trail.Distance() < 0 ? "" : "approx. " + trail.Distance() + "km away");
+            holder.mRideStats.setText("Rides: 0/0");
+            holder.mCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, TrailActivity.class);
+                    intent.putExtra("trailId", trail.ID());
+                    mContext.startActivity(intent);
+                }
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        if (mDataset==null) return 0;
-        return mDataset.size();
+        if (mDataset==null) return 1;
+        return mDataset.size()+1;
     }
 
     private void removeTrail(Trail trail) {

@@ -140,7 +140,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="96dp"
                     android:id="@+id/photo_picker"
-                    android:background="@color/ratingbar_background">
+                    android:background="@color/translucent">
 
                     <LinearLayout
                         android:orientation="horizontal"
@@ -189,7 +189,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="10dp"
                 android:layout_alignBottom="@+id/feature_photo"
-                android:background="@color/ratingbar_background"
+                android:background="@color/translucent"
                 android:id="@+id/ratingbar"
                 android:elevation="1dp">
 

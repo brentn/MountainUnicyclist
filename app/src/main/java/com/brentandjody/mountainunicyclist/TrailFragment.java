@@ -40,9 +40,17 @@ public class TrailFragment extends Fragment {
                 startActivityForResult(locationPickerIntent, Application.NEW_LOCATION);
             }
         });
-
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                ((MainActivity) getActivity()).scrollHeader(dy);
+            }
+        });
         return rootView;
     }
+
+
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
