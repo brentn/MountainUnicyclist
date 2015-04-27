@@ -151,9 +151,14 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         if (position==0) { //header
-            holder.mCard.setMinimumHeight((int)mContext.getResources().getDimension(R.dimen.header_image_height));
+            //set height to match header pic height
+            holder.mCard.setMinimumHeight((int) mContext.getResources().getDimension(R.dimen.header_image_height));
             ((ViewGroup)holder.mCard).removeAllViews();
             holder.mCard.setBackgroundColor(Color.TRANSPARENT);
+            //eliminate padding
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.mCard.getLayoutParams();
+            params.topMargin=0; params.bottomMargin=0;
+            holder.mCard.setLayoutParams(params);
         } else {
             final Trail trail = mDataset.get(position-1);
             if (trail.Name() == null) {

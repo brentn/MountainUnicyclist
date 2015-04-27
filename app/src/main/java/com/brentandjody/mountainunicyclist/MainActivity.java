@@ -34,7 +34,6 @@ public class MainActivity extends ActionBarActivity {
     ViewPager mViewPager;
     KenBurnsView mHeaderPicture;
     PagerSlidingTabStrip mTabStrip;
-    ImageView mSplashScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        KenBurnsView mHeaderPicture = (KenBurnsView) findViewById(R.id.header_picture);
+        mHeaderPicture = (KenBurnsView) findViewById(R.id.header_picture);
         Photo.LoadRandomImageInto(mHeaderPicture);
         mTabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         mTabStrip.setViewPager(mViewPager);
@@ -80,13 +79,10 @@ public class MainActivity extends ActionBarActivity {
 
 
     public void scrollHeader(int dy) {
-        if (mHeaderPicture != null && mTabStrip!=null) {
-            mHeaderPicture.setTranslationY(mHeaderPicture.getTranslationY() - (dy / 2));
-            mTabStrip.setTranslationY(mTabStrip.getTranslationY() - dy);
-            if (mHeaderPicture.getTranslationY() > 0)
-                mHeaderPicture.setTranslationY(0);  // this re-orients
-            if (mTabStrip.getTranslationY() > 0) mTabStrip.setTranslationY(0);
-        }
+        if (dy>0) getSupportActionBar().hide();
+        else getSupportActionBar().show();
+        mHeaderPicture.setTranslationY(mHeaderPicture.getTranslationY() - Math.round(dy/2 -0.5));
+        mTabStrip.setTranslationY(mTabStrip.getTranslationY() - dy);
     }
 
 
