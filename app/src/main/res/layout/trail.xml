@@ -30,7 +30,7 @@
 
             <ImageView
                 android:layout_width="fill_parent"
-                android:layout_height="160dp"
+                android:layout_height="250dp"
                 android:id="@+id/feature_photo"
                 android:layout_alignParentTop="true"
                 android:scaleType="centerCrop"
@@ -42,8 +42,8 @@
             <FrameLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/primary"
-                android:id="@+id/titlebar">
+                android:id="@+id/titlebar"
+                android:background="@android:color/transparent">
 
                 <ImageButton
                     android:layout_width="48dp"

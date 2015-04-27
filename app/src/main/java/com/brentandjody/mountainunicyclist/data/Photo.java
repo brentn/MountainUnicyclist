@@ -123,18 +123,21 @@ public class Photo extends ParseObject {
             @Override
             public void done(List<Photo> photos, ParseException e) {
                 if (e==null) {
-                    Random rand = new Random();
-                    int index = rand.nextInt(photos.size());
-                    Photo photo = photos.get(index);
-                    ParseFile file = photo.getParseFile(IMAGE_FILE);
-                    file.getDataInBackground(new GetDataCallback() {
-                        @Override
-                        public void done(byte[] bytes, ParseException e) {
-                            if (e==null)
-                                imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                            else Log.w("LoadRandomImageInto", "error loading photo data: "+e.getMessage());
-                        }
-                    });
+                    if (photos.size()>0) {
+                        Random rand = new Random();
+                        int index = rand.nextInt(photos.size());
+                        Photo photo = photos.get(index);
+                        ParseFile file = photo.getParseFile(IMAGE_FILE);
+                        file.getDataInBackground(new GetDataCallback() {
+                            @Override
+                            public void done(byte[] bytes, ParseException e) {
+                                if (e == null)
+                                    imageView.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                                else
+                                    Log.w("LoadRandomImageInto", "error loading photo data: " + e.getMessage());
+                            }
+                        });
+                    }
                 } else Log.w("LoadRandomImageInto", "error loading photo: " + e.getMessage());
             }
         });

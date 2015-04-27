@@ -34,24 +34,23 @@
         <com.flaviofaria.kenburnsview.KenBurnsView
             android:id="@+id/header_picture"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <ImageView
             android:id="@+id/header_thumbnail"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_gravity="center"
-            android:src="@mipmap/muni" />
+            android:layout_gravity="center" />
 
         <com.astuetz.PagerSlidingTabStrip
             android:id="@+id/tabs"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="48dip"
-            android:layout_gravity="bottom"
-            android:textColor="@color/accent_dark"
-            app:pstsIndicatorColor="@color/accent_dark"
+            android:layout_gravity="center_horizontal|bottom"
+            android:textColor="@android:color/white"
+            app:pstsIndicatorColor="@android:color/white"
             app:pstsDividerColor="@android:color/transparent"
-            android:background="@color/translucent" />
+            android:layout_marginBottom="@dimen/header_image_overlay" />
 
     </FrameLayout>
 
@@ -62,7 +61,8 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id">
+        ads:adUnitId="@string/banner_ad_unit_id"
+        android:elevation="2dp">
     </com.google.android.gms.ads.AdView>
 
 </RelativeLayout>

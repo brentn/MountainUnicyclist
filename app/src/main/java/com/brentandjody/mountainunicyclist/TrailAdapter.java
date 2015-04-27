@@ -157,7 +157,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             holder.mCard.setBackgroundColor(Color.TRANSPARENT);
             //eliminate padding
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.mCard.getLayoutParams();
-            params.topMargin=0; params.bottomMargin=0;
+            params.topMargin=0; params.bottomMargin=0-(int)mContext.getResources().getDimension(R.dimen.header_image_overlay);
             holder.mCard.setLayoutParams(params);
         } else {
             final Trail trail = mDataset.get(position-1);
