@@ -58,11 +58,12 @@ public class TrailActivity extends ActionBarActivity {
         ridesButton = (TextView) findViewById(R.id.rides_button);
         featuresButton = (TextView) findViewById(R.id.features_button);
         mTrail = new Trail();
-        View titlebar = findViewById(R.id.titlebar);
-        ((ViewGroup) titlebar.getParent()).removeView(titlebar);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setCustomView(titlebar);
+        setTitle("");
+//        View titlebar = findViewById(R.id.titlebar);
+//        ((ViewGroup) titlebar.getParent()).removeView(titlebar);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayShowCustomEnabled(true);
+//        actionBar.setCustomView(titlebar);
 
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {

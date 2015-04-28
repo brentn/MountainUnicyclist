@@ -1,5 +1,8 @@
 package com.brentandjody.mountainunicyclist;
 
+import android.database.sqlite.SQLiteDatabase;
+
+import com.brentandjody.mountainunicyclist.data.Database;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
 import com.brentandjody.mountainunicyclist.data.Trailsystem;
@@ -19,6 +22,8 @@ public class Application extends android.app.Application{
     static final int EDIT_TRAIL = 2;
     static final int GET_PHOTO = 3;
 
+    private Database mDatabase;
+
     @Override
     public void onCreate()
     {
@@ -27,10 +32,11 @@ public class Application extends android.app.Application{
         setupParse();
     }
 
+    public Database DB() {return mDatabase;}
+
     protected void initSingletons()
     {
-        // Initialize the instance of MySingleton
-        //MySingleton.initInstance();
+        mDatabase  = new Database(this);
     }
 
     private void setupParse() {

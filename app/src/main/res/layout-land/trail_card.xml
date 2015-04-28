@@ -30,7 +30,7 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/card_titlebar"
+        android:background="@color/primary_translucent"
         android:id="@+id/titlebar"
         android:layout_toEndOf="@+id/feature_photo"
         android:layout_alignParentLeft="true"

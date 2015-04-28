@@ -41,7 +41,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setTitle(getString(R.string.app_name));
         setContentView(R.layout.activity_main);
-        // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -115,7 +114,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public int getCount() {
 
-            return 3;
+            return 2;
         }
 
         @Override

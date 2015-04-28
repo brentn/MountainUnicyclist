@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:background="@color/primary"
         android:id="@+id/titlebar"
-        android:layout_gravity="top|center_horizontal">
+        android:layout_gravity="top|center_horizontal"
+        android:paddingBottom="4dp">
 
         <ImageButton
             android:layout_width="48dp"
@@ -99,7 +100,8 @@
                         android:text="@string/description"
                         android:id="@+id/textView7"
                         android:textColor="@color/secondary_text"
-                        android:paddingLeft="10dp" />
+                        android:paddingLeft="10dp"
+                        android:paddingTop="8dp" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -134,7 +136,8 @@
                         android:textAppearance="?android:attr/textAppearanceSmall"
                         android:text="@string/photos"
                         android:id="@+id/textView5"
-                        android:paddingLeft="10dp" />
+                        android:paddingLeft="10dp"
+                        android:paddingTop="8dp" />
 
                     <HorizontalScrollView
                         android:layout_width="match_parent"
@@ -163,7 +166,8 @@
                             android:textAppearance="?android:attr/textAppearanceSmall"
                             android:text="@string/comments"
                             android:id="@+id/textView6"
-                            android:paddingLeft="10dp" />
+                            android:paddingLeft="10dp"
+                            android:paddingTop="8dp" />
 
                         <TextView
                             android:layout_width="wrap_content"

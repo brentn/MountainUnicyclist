@@ -11,17 +11,32 @@
         <item name="colorAccent">@color/accent</item>
         <item name="android:windowActionBarOverlay">true</item>
         <item name="windowActionBarOverlay">true</item>
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="android:actionBarStyle">@style/TransparentActionBar</item>
+        <item name="actionBarStyle">@style/TransparentActionBar</item>
     </style>
+    <style name="MainActivityTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/TransparentActionBar</item>
+        <item name="actionBarStyle">@style/TransparentActionBar</item>
+    </style>
+
+
     <!-- ActionBar styles -->
-    <style name="MyActionBar"
+    <style name="TransparentActionBar"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="background">@android:color/transparent</item>
+    </style>
+    <style name="TranslucentActionBar"
         parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/translucent</item>
-
-        <!-- Support library compatibility -->
         <item name="background">@color/translucent</item>
     </style>
+    <style name="PrimaryActionBar"
+        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/primary_translucent</item>
+        <item name="background">@color/primary_translucent</item>
+    </style>
+
 
 </resources>
 

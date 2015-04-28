@@ -1,5 +1,6 @@
 package com.brentandjody.mountainunicyclist.data;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -37,7 +38,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOOKUP);
     }
 
-    public String Lookup(String object_id, String key) {
+    public String Get(String object_id, String key) {
         String result = null;
         String lookup_key = object_id + ":" + key;
         SQLiteDatabase db = this.getReadableDatabase();
@@ -46,5 +47,15 @@ public class Database extends SQLiteOpenHelper {
         c.close();
         db.close();
         return result;
+    }
+
+    public void Set(String object_id, String key, String value) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String lookup_key = object_id + ":" + key;
+        ContentValues values = new ContentValues();
+        values.put(KEY, lookup_key);
+        values.put(VALUE, value);
+        db.updateWithOnConflict(TABLE_LOOKUP, values, KEY+"=?",new String[] {lookup_key}, SQLiteDatabase.CONFLICT_REPLACE);
+        db.close();
     }
 }
