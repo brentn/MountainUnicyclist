@@ -13,8 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +40,7 @@ public class TrailActivity extends ActionBarActivity {
     private TextView description;
     private TextView trailsystem;
     private PhotoPicker photoPicker;
+    private ScrollView scrollView;
     private TextView commentsButton;
     private TextView ridesButton;
     private TextView featuresButton;
@@ -57,13 +60,16 @@ public class TrailActivity extends ActionBarActivity {
         commentsButton = (TextView) findViewById(R.id.add_comment_button);
         ridesButton = (TextView) findViewById(R.id.rides_button);
         featuresButton = (TextView) findViewById(R.id.features_button);
+        scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                if (scrollView.getScrollY()<50) getSupportActionBar().show();
+                else getSupportActionBar().hide();
+            }
+        });
         mTrail = new Trail();
         setTitle("");
-//        View titlebar = findViewById(R.id.titlebar);
-//        ((ViewGroup) titlebar.getParent()).removeView(titlebar);
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setDisplayShowCustomEnabled(true);
-//        actionBar.setCustomView(titlebar);
 
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
@@ -131,10 +137,8 @@ public class TrailActivity extends ActionBarActivity {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
-                            try {
-                                mTrail.delete();
-                                Toast.makeText(TrailActivity.this, "trail deleted", Toast.LENGTH_SHORT).show();
-                            } catch (ParseException ex) {}
+                            mTrail.Delete();
+                            Toast.makeText(TrailActivity.this, "trail deleted", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .setNegativeButton(android.R.string.no, null).show();

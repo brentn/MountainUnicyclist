@@ -1,7 +1,7 @@
 <!-- Base application theme. -->
 <resources>
     <!-- inherit from the material theme -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppTheme" parent="Theme.AppCompat">
         <!-- Main theme colors -->
         <!--   your app branding color for the app bar -->
         <item name="colorPrimary">@color/primary</item>
@@ -22,7 +22,7 @@
 
     <!-- ActionBar styles -->
     <style name="TransparentActionBar"
-        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        parent="@style/Theme.AppCompat">
         <item name="android:background">@android:color/transparent</item>
         <item name="background">@android:color/transparent</item>
     </style>
@@ -37,6 +37,9 @@
         <item name="background">@color/primary_translucent</item>
     </style>
 
+    <style name="WhiteActionBarText" parent = "@style/TextAppearance.AppCompat.Title">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 
 </resources>
 

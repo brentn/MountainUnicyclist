@@ -39,7 +39,6 @@ public class Trail extends ParseObject {
 
     private int mDistance = -1;
     private String mFeaturedPhotoId=null;
-    private Flags mFlags;
 
     public Trail() {}
 
@@ -102,8 +101,10 @@ public class Trail extends ParseObject {
     }
     public int Distance() {return mDistance;}
     public boolean isDeleted() {
-        if (mFlags==null) mFlags=new Flags();
-        return mFlags.isDeleted();
+        ParseQuery<Flags> query = Flags.getQuery();
+        query.fromLocalDatastore();
+        try { return query.getFirst().isDeleted(); }
+        catch (ParseException e) { return false; }
     }
     public String Stars() {
         int count = getInt(RATING);
@@ -125,10 +126,17 @@ public class Trail extends ParseObject {
 
     public void Delete() {
         //Mark a trail as deleted and remove it from the trail list
-        Flags flags = new Flags(getInt(FLAGS));
-        flags.setDeleted();
-        put(FLAGS, flags.toInt());
-        force_update();
+        ParseQuery<Flags> query = Flags.getQuery();
+        query.fromLocalDatastore();
+        query.whereEqualTo(Flags.OBJECT, getObjectId());
+        try {
+            Flags flags = query.getFirst();
+            if (flags==null) flags = new Flags(getObjectId());
+            flags.delete();
+            flags.pin();
+            force_update();
+        }
+        catch (ParseException e) { }
     }
 
     public void Load(String trail_id) {
@@ -146,7 +154,7 @@ public class Trail extends ParseObject {
                     trail.calculateDistance(myLocation);
                     Log.d("LoadTrail", "trail loaded");
                 } else Log.w("LoadTrail", e.getMessage());
-                callback.done(trail, e);
+                if (callback!=null) callback.done(trail, e);
             }
         });
     }

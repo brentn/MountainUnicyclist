@@ -58,7 +58,17 @@ public class Photo extends ParseObject {
     public String OwnerId() { return getString(OWNER_ID); }
     public String DominantColor() { return getString(DOMINANT_COLOR); }
 
-    public Flags FLAGS() { return new Flags(getInt(FLAGS)); }
+    public Flags FLAGS() {
+        ParseQuery<Flags> query = Flags.getQuery();
+        query.fromLocalDatastore();
+        query.whereEqualTo(Flags.OBJECT, getObjectId());
+        try {
+            Flags flags = query.getFirst();
+            if (flags!=null)
+            return flags;
+        } catch (ParseException ex) {}
+        return new Flags(getObjectId());
+    }
 
     public void Load(String photo_id) {
         ParseQuery<Photo> query = Photo.getQuery();
@@ -113,7 +123,7 @@ public class Photo extends ParseObject {
         ParseQuery<Photo> query = getQuery();
         query.fromLocalDatastore();
         query.whereEqualTo(OWNER_ID, owner_id);
-        query.findInBackground(callback);
+        if (callback!=null) query.findInBackground(callback);
     }
 
     public static void LoadRandomImageInto(final ImageView imageView) {
@@ -122,8 +132,8 @@ public class Photo extends ParseObject {
         query.findInBackground(new FindCallback<Photo>() {
             @Override
             public void done(List<Photo> photos, ParseException e) {
-                if (e==null) {
-                    if (photos.size()>0) {
+                if (e == null) {
+                    if (photos.size() > 0) {
                         Random rand = new Random();
                         int index = rand.nextInt(photos.size());
                         Photo photo = photos.get(index);
@@ -172,7 +182,7 @@ public class Photo extends ParseObject {
                 if (e == null)
                     if (photo!=null) photo.deleteEventually();
                     else
-                        Log.w("DeletePhoto", e.getMessage());
+                        Log.w("DeletePhoto", "error: "+e.getMessage());
             }
         });
     }

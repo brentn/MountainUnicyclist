@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mHeaderPicture = (KenBurnsView) findViewById(R.id.header_picture);
-        mHeaderPicture.setColorFilter(getResources().getColor(R.color.primary),
+        mHeaderPicture.setColorFilter(getResources().getColor(R.color.primary_dark),
                 android.graphics.PorterDuff.Mode.MULTIPLY);
         mHeaderPos = mHeaderPicture.getTranslationY();
         Photo.LoadRandomImageInto(mHeaderPicture);
