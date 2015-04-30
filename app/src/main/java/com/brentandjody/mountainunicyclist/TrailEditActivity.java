@@ -31,6 +31,7 @@ import android.widget.RatingBar;
 import android.widget.Spinner;
 
 import com.brentandjody.mountainunicyclist.data.Difficulty;
+import com.brentandjody.mountainunicyclist.data.Flags;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.PhotoPicker;
 import com.brentandjody.mountainunicyclist.data.Trail;
@@ -145,7 +146,7 @@ public class TrailEditActivity extends ActionBarActivity {
             final Photo photo = new Photo();
             photo.setData(image);
             photo.setOwnerId(mTrail.ID());
-            if (intent.hasExtra("isTemporaryPhoto")) photo.FLAGS().setTemporary();
+            if (intent.hasExtra("isTemporaryPhoto")) Flags.setTemporary(photo.ID());
             photo.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {

@@ -28,11 +28,11 @@ public class Trail extends ParseObject {
     private static final String DESCRIPTION = "description";
     private static final String LAT = "latitude";
     private static final String LNG = "longitude";
+    private static final String DIRECTIONS = "directions";
     private static final String DIFFICULTY = "difficulty";
     private static final String RATING = "rating";
-    private static final String PHOTO_ID = "featurephotoid";
+    private static final String IS_MUNI = "ismuni";
     private static final String TRAILSYSTEM_ID = "trailsystemid";
-    private static final String FLAGS = "flags";
     private static final int MAX_STARS = 8;
 
     private static final TrailObservable mObservable = new TrailObservable();
@@ -44,6 +44,7 @@ public class Trail extends ParseObject {
 
     public static ParseQuery<Trail> getQuery() { return ParseQuery.getQuery(Trail.class); }
 
+    // SETTERS
     public void setName(String name) {
         put(NAME, name);
         mObservable.setChanged();
@@ -57,6 +58,10 @@ public class Trail extends ParseObject {
         put(LNG, location.longitude);
         mObservable.setChanged();
     }
+    public void setDirections(String directions) {
+        put(DIRECTIONS, directions);
+        mObservable.setChanged();
+    }
     public void setRating(int rating) {
         if (rating < 0) return;
         if (rating > MAX_STARS) rating=MAX_STARS;
@@ -67,6 +72,10 @@ public class Trail extends ParseObject {
         put(DIFFICULTY, difficulty.toInt());
         mObservable.setChanged();
     }
+    public void setIsMuni(boolean isMuni) {
+        put(IS_MUNI, isMuni);
+        mObservable.setChanged();
+    }
     public void setTrailsystem(String trailsystem_id) {
         put(TRAILSYSTEM_ID, trailsystem_id);
         mObservable.setChanged();
@@ -75,14 +84,9 @@ public class Trail extends ParseObject {
         mFeaturedPhotoId = photo_id;
         mObservable.setChanged();
     }
-    public void force_update() {
-        mObservable.setChanged();
-        mObservable.notifyObservers(this);
-    }
-    public void notifyObservers() {
-        mObservable.notifyObservers(this);
-    }
 
+
+    // GETTERS
     public String ID() {return getObjectId();}
     public String Name() {return getString(NAME);}
     public String Description() {return getString(DESCRIPTION);}
@@ -91,8 +95,10 @@ public class Trail extends ParseObject {
         double lng = getDouble(LNG);
         return new LatLng(lat, lng);
     }
+    public String getDirections() {return getString(DIRECTIONS);}
     public int Rating() {return getInt(RATING);}
     public Difficulty Difficulty() {return new Difficulty(getInt(DIFFICULTY));}
+    public boolean IsMuni() {return getBoolean(IS_MUNI);}
     public String TrailsystemId() {return getString(TRAILSYSTEM_ID);}
     public String PhotoId() {
         if (mFeaturedPhotoId==null)
@@ -100,11 +106,15 @@ public class Trail extends ParseObject {
         return mFeaturedPhotoId;
     }
     public int Distance() {return mDistance;}
+
+
+    // HELPERS
+    public void Delete() {
+        Flags.Delete(getObjectId());
+        force_update();
+    }
     public boolean isDeleted() {
-        ParseQuery<Flags> query = Flags.getQuery();
-        query.fromLocalDatastore();
-        try { return query.getFirst().isDeleted(); }
-        catch (ParseException e) { return false; }
+        return Flags.isDeleted(getObjectId());
     }
     public String Stars() {
         int count = getInt(RATING);
@@ -124,21 +134,8 @@ public class Trail extends ParseObject {
         return result;
     }
 
-    public void Delete() {
-        //Mark a trail as deleted and remove it from the trail list
-        ParseQuery<Flags> query = Flags.getQuery();
-        query.fromLocalDatastore();
-        query.whereEqualTo(Flags.OBJECT, getObjectId());
-        try {
-            Flags flags = query.getFirst();
-            if (flags==null) flags = new Flags(getObjectId());
-            flags.delete();
-            flags.pin();
-            force_update();
-        }
-        catch (ParseException e) { }
-    }
 
+    // LOADERS
     public void Load(String trail_id) {
         ParseQuery<Trail> query = Trail.getQuery();
         query.fromLocalDatastore();
@@ -154,11 +151,10 @@ public class Trail extends ParseObject {
                     trail.calculateDistance(myLocation);
                     Log.d("LoadTrail", "trail loaded");
                 } else Log.w("LoadTrail", e.getMessage());
-                if (callback!=null) callback.done(trail, e);
+                if (callback != null) callback.done(trail, e);
             }
         });
     }
-
     public static void LoadAllTrails(final LatLng myLocation, final int distance, final FindCallback<Trail> callback) {
         //Load a list of all trails, except those marked as deleted,
         //calculate the distance, and sort them by (distance & rating)
@@ -180,9 +176,6 @@ public class Trail extends ParseObject {
         });
     }
 
-    public static void registerForUpdates(Observer observer) {
-        mObservable.addObserver(observer);
-    }
 
     // Private methods
     private void calculateDistance(LatLng myLocation) {
@@ -225,6 +218,18 @@ public class Trail extends ParseObject {
 
 
 // **Observable**
+
+    public static void registerForUpdates(Observer observer) {
+        mObservable.addObserver(observer);
+    }
+    public void notifyObservers() {
+        mObservable.notifyObservers(this);
+    }
+    public void force_update() {
+        mObservable.setChanged();
+        mObservable.notifyObservers(this);
+    }
+
     private static class TrailObservable extends Observable {
         @Override
         public void setChanged() {

@@ -31,7 +31,6 @@ public class Photo extends ParseObject {
     private static final String DOMINANT_COLOR = "dominantcolor";
     private static final String IMAGE_FILE = "file";
     private static final String FILENAME = "photo.png";
-    private static final String FLAGS = "flags";
 
     public Photo() {
     }
@@ -57,18 +56,6 @@ public class Photo extends ParseObject {
     public String ID() { return getObjectId(); }
     public String OwnerId() { return getString(OWNER_ID); }
     public String DominantColor() { return getString(DOMINANT_COLOR); }
-
-    public Flags FLAGS() {
-        ParseQuery<Flags> query = Flags.getQuery();
-        query.fromLocalDatastore();
-        query.whereEqualTo(Flags.OBJECT, getObjectId());
-        try {
-            Flags flags = query.getFirst();
-            if (flags!=null)
-            return flags;
-        } catch (ParseException ex) {}
-        return new Flags(getObjectId());
-    }
 
     public void Load(String photo_id) {
         ParseQuery<Photo> query = Photo.getQuery();
@@ -179,10 +166,11 @@ public class Photo extends ParseObject {
         query.getFirstInBackground(new GetCallback<Photo>() {
             @Override
             public void done(Photo photo, ParseException e) {
-                if (e == null)
-                    if (photo!=null) photo.deleteEventually();
-                    else
-                        Log.w("DeletePhoto", "error: "+e.getMessage());
+                if (e == null) {
+                    if (photo != null) photo.deleteEventually();
+                }
+                else
+                    Log.w("DeletePhoto", e.getMessage());
             }
         });
     }
