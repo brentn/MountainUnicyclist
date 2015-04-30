@@ -42,7 +42,8 @@
 
         <activity
             android:name=".LocationPicker"
-            android:label="@string/title_activity_location_picker" >
+            android:label="@string/title_activity_location_picker"
+            android:theme="@style/LocationPickerTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".TrailEditActivity" />

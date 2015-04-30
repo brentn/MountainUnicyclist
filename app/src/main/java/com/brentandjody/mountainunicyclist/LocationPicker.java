@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -17,7 +18,7 @@ import com.google.android.gms.maps.GoogleMap.SnapshotReadyCallback;
 
 import java.io.ByteArrayOutputStream;
 
-public class LocationPicker extends FragmentActivity {
+public class LocationPicker extends ActionBarActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private Marker mMarker = null;
@@ -28,6 +29,7 @@ public class LocationPicker extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_map);
         setUpMapIfNeeded();
+        setTitle(getString(R.string.identify_trailhead));
     }
 
     @Override

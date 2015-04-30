@@ -18,6 +18,10 @@
         <item name="android:actionBarStyle">@style/TransparentActionBar</item>
         <item name="actionBarStyle">@style/TransparentActionBar</item>
     </style>
+    <style name="LocationPickerTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/PrimaryActionBar</item>
+        <item name="actionBarStyle">@style/PrimaryActionBar</item>
+    </style>
 
 
     <!-- ActionBar styles -->
@@ -32,9 +36,9 @@
         <item name="background">@color/translucent</item>
     </style>
     <style name="PrimaryActionBar"
-        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/primary_translucent</item>
-        <item name="background">@color/primary_translucent</item>
+        parent="@style/Theme.AppCompat">
+        <item name="android:background">@color/primary</item>
+        <item name="background">@color/primary</item>
     </style>
 
     <style name="WhiteActionBarText" parent = "@style/TextAppearance.AppCompat.Title">
