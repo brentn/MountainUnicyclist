@@ -116,11 +116,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Description of trail"
             android:id="@+id/description"
-            android:minLines="1"
+            android:minLines="2"
             android:maxLines="5"
-            android:textColor="@color/primary_text" />
+            android:textColor="@color/primary_text"
+            android:hint="Description of trail" />
 
         <FrameLayout
             android:layout_width="fill_parent"

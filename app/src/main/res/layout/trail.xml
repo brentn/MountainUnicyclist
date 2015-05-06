@@ -192,6 +192,21 @@
                     </LinearLayout>
                 </HorizontalScrollView>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/directions"
+                    android:id="@+id/dTitle"
+                    android:paddingLeft="10dp"
+                    android:paddingTop="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/directions" />
+
                 <LinearLayout
                     android:orientation="vertical"
                     android:layout_width="fill_parent"
@@ -215,7 +230,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Add Comment"
+                        android:text="@string/comment"
                         android:id="@+id/add_comment_button"
                         android:textColor="@color/accent"
                         android:padding="12dp"

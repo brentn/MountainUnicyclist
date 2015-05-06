@@ -95,7 +95,7 @@ public class Trail extends ParseObject {
         double lng = getDouble(LNG);
         return new LatLng(lat, lng);
     }
-    public String getDirections() {return getString(DIRECTIONS);}
+    public String Directions() {return getString(DIRECTIONS);}
     public int Rating() {return getInt(RATING);}
     public Difficulty Difficulty() {return new Difficulty(getInt(DIFFICULTY));}
     public boolean IsMuni() {return getBoolean(IS_MUNI);}

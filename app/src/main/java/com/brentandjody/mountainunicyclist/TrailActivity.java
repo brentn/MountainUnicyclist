@@ -38,6 +38,8 @@ public class TrailActivity extends ActionBarActivity {
     private ImageView difficulty;
     private TextView rating;
     private TextView description;
+    private TextView directions;
+    private TextView dTitle;
     private TextView trailsystem;
     private PhotoPicker photoPicker;
     private ScrollView scrollView;
@@ -55,11 +57,13 @@ public class TrailActivity extends ActionBarActivity {
         difficulty = (ImageView) findViewById(R.id.difficulty_icon);
         rating = (TextView) findViewById(R.id.rating);
         description = (TextView) findViewById(R.id.description);
+        dTitle = (TextView) findViewById(R.id.dTitle);
         trailsystem = (TextView) findViewById(R.id.trailsystem);
         photoPicker = new PhotoPicker(this, (LinearLayout) findViewById(R.id.photos));
         commentsButton = (TextView) findViewById(R.id.add_comment_button);
         ridesButton = (TextView) findViewById(R.id.rides_button);
         featuresButton = (TextView) findViewById(R.id.features_button);
+        directions = (TextView) findViewById(R.id.directions);
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
         scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
@@ -105,6 +109,12 @@ public class TrailActivity extends ActionBarActivity {
         difficulty.setImageResource(mTrail.Difficulty().Icon());
         rating.setText(mTrail.Stars());
         description.setText(mTrail.Description());
+        if (mTrail.Directions().length()==0) {
+            dTitle.setVisibility(View.GONE);
+        } else {
+            dTitle.setVisibility(View.VISIBLE);
+        }
+        directions.setText(mTrail.Directions());
         //TODO:trailsystem
         photoPicker.setup(mTrail.ID());
         photoPicker.select(mTrail.PhotoId());

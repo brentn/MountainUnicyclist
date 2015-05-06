@@ -32,8 +32,9 @@
                 android:layout_alignParentLeft="true"
                 android:hint="@string/trail_name"
                 android:layout_centerVertical="true"
-                android:layout_alignTop="@+id/trailsystem"
-                android:layout_alignBottom="@+id/trailsystem" />
+                android:layout_alignTop="@+id/location_picker_button"
+                android:layout_alignBottom="@+id/location_picker_button"
+                android:textAppearance="@android:style/TextAppearance.Large" />
 
             <Spinner
                 android:layout_width="wrap_content"
@@ -44,7 +45,9 @@
                 android:layout_toLeftOf="@+id/location_picker_button"
                 android:layout_toRightOf="@+id/title"
                 android:layout_alignParentTop="true"
-                android:layout_centerVertical="true" />
+                android:layout_centerVertical="true"
+                android:layout_alignTop="@+id/location_picker_button"
+                android:layout_alignBottom="@+id/location_picker_button" />
 
             <ImageButton
                 android:layout_width="wrap_content"
@@ -56,9 +59,7 @@
                 android:padding="12dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_alignBottom="@+id/trailsystem"
-                android:layout_alignTop="@+id/trailsystem" />
+                android:layout_centerVertical="true" />
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -117,7 +118,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="\@strings/difficulty"
+                android:text="@string/difficulty"
                 android:id="@+id/textView"
                 android:textColor="@color/secondary_text"
                 android:paddingLeft="8dp"

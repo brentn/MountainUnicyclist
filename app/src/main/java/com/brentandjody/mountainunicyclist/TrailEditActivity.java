@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 
 import com.brentandjody.mountainunicyclist.data.Difficulty;
@@ -67,6 +69,7 @@ public class TrailEditActivity extends ActionBarActivity {
     private Uri mOutputFileUri;
     private ImageView mSelectedPhoto;
     private PhotoPicker mPhotoPicker;
+    private float startY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,7 @@ public class TrailEditActivity extends ActionBarActivity {
         okButton = (Button) findViewById(R.id.ok_button);
         addPhotoButton = (ImageView) findViewById(R.id.add_photo_button);
         mPhotoPicker = new PhotoPicker(this, (LinearLayout)findViewById(R.id.photos));
+        ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_view);
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
             Trail.Load(intent.getStringExtra("trailId"), LocationHelper.getGPS(this), new GetCallback<Trail>() {
@@ -109,7 +113,7 @@ public class TrailEditActivity extends ActionBarActivity {
                 }
             });
         }
-        setTitle(getString(R.string.edit_trail));
+        getSupportActionBar().hide();
     }
 
     @Override
@@ -167,8 +171,10 @@ public class TrailEditActivity extends ActionBarActivity {
         }
         name.setText(mTrail.Name());
         difficulty.check(mTrail.Difficulty().RadioButton());
+        isMuni.setChecked(mTrail.IsMuni());
         rating.setRating(mTrail.Rating());
         description.setText(mTrail.Description());
+        directions.setText(mTrail.Directions());
         mPhotoPicker.setup(mTrail.ID());
         setupButtonListeners();
         setupTrailsystem();

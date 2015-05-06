@@ -154,6 +154,22 @@
                             android:gravity="center_vertical|left"></LinearLayout>
                     </HorizontalScrollView>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:text="@string/directions"
+                        android:id="@+id/dTitle"
+                        android:textColor="@color/secondary_text"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/directions" />
+
                     <LinearLayout
                         android:orientation="vertical"
                         android:layout_width="fill_parent"
