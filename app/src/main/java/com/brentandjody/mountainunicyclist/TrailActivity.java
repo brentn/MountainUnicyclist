@@ -109,7 +109,7 @@ public class TrailActivity extends ActionBarActivity {
         difficulty.setImageResource(mTrail.Difficulty().Icon());
         rating.setText(mTrail.Stars());
         description.setText(mTrail.Description());
-        if (mTrail.Directions().length()==0) {
+        if (mTrail==null || mTrail.Directions()==null || mTrail.Directions().length()==0) {
             dTitle.setVisibility(View.GONE);
         } else {
             dTitle.setVisibility(View.VISIBLE);
