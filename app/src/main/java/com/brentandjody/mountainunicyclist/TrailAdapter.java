@@ -171,15 +171,19 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
             holder.mDescription.setText(trail.Description());
             holder.mPhoto.setImageBitmap(null);
             //indirect values
-            Photo.LoadImage(trail.PhotoId(), new GetDataCallback() {
-                @Override
-                public void done(byte[] bytes, ParseException e) {
-                    if (e == null) {
-                        featured_image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                        Log.d("TrailAdapter", "featured image loaded");
-                    } else Log.w("TrailAdapter", e.getMessage());
-                }
-            });
+            try {
+                Photo.LoadImage(trail.PhotoId(), new GetDataCallback() {
+                    @Override
+                    public void done(byte[] bytes, ParseException e) {
+                        if (e == null) {
+                            featured_image.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                            Log.d("TrailAdapter", "featured image loaded");
+                        } else Log.w("TrailAdapter", e.getMessage());
+                    }
+                });
+            } catch (OutOfMemoryError ex) {
+                Log.e("TrailAdapter", ex.getMessage());
+            }
             holder.mDifficulty.setImageResource(trail.Difficulty().Icon());
             String trailsystem = ""; //TODO:lookup trailsystem
             holder.mTrailsystem.setText(trailsystem);

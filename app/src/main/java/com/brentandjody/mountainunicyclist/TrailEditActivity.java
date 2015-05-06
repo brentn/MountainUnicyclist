@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -57,6 +58,8 @@ public class TrailEditActivity extends ActionBarActivity {
     private RadioGroup difficulty;
     private RatingBar rating;
     private EditText description;
+    private EditText directions;
+    private CheckBox isMuni;
     private Spinner trailsystem;
     private ImageButton locationButton;
     private Button okButton;
@@ -72,6 +75,8 @@ public class TrailEditActivity extends ActionBarActivity {
 
         name = (EditText) findViewById(R.id.title);
         difficulty = (RadioGroup) findViewById(R.id.difficulty);
+        directions = (EditText) findViewById(R.id.directions);
+        isMuni = (CheckBox) findViewById(R.id.offroad);
         rating = (RatingBar) findViewById(R.id.rating);
         description = (EditText) findViewById(R.id.description);
         trailsystem = (Spinner) findViewById(R.id.trailsystem);
@@ -121,6 +126,8 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail.setDifficulty(d);
             mTrail.setRating(Math.round(rating.getRating()));
             mTrail.setDescription(description.getText().toString());
+            mTrail.setIsMuni(isMuni);
+            mTrail.setDirections(directions.getText().toString());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
             mTrail.saveInBackground();
