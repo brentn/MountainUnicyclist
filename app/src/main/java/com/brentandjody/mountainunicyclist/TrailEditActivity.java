@@ -76,7 +76,7 @@ public class TrailEditActivity extends ActionBarActivity {
         name = (EditText) findViewById(R.id.title);
         difficulty = (RadioGroup) findViewById(R.id.difficulty);
         directions = (EditText) findViewById(R.id.directions);
-        isMuni = (CheckBox) findViewById(R.id.offroad);
+        isMuni = (CheckBox) findViewById(R.id.isMuni);
         rating = (RatingBar) findViewById(R.id.rating);
         description = (EditText) findViewById(R.id.description);
         trailsystem = (Spinner) findViewById(R.id.trailsystem);
@@ -126,7 +126,7 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail.setDifficulty(d);
             mTrail.setRating(Math.round(rating.getRating()));
             mTrail.setDescription(description.getText().toString());
-            mTrail.setIsMuni(isMuni);
+            mTrail.setIsMuni(isMuni.isChecked());
             mTrail.setDirections(directions.getText().toString());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
