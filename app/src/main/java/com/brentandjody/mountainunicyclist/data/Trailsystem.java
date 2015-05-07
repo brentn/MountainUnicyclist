@@ -1,13 +1,24 @@
 package com.brentandjody.mountainunicyclist.data;
 
+import android.content.Context;
 import android.graphics.Point;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
+import com.brentandjody.mountainunicyclist.R;
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.FindCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,6 +31,8 @@ public class Trailsystem extends ParseObject {
     private static final String DESCRIPTION = "description";
     private static final String LAT = "latitude";
     private static final String LNG = "longitude";
+    public static final String NONE = "NONE";
+    public static final String NEW = "NEW";
 
 
     public Trailsystem(){}
@@ -46,5 +59,25 @@ public class Trailsystem extends ParseObject {
         return new LatLng(lat, lng);
     }
     public boolean isDeleted() { return Flags.isDeleted(getObjectId()); }
+
+    public static void LoadAll(final ArrayAdapter adapter) {
+        adapter.clear();
+        adapter.add(new ListItem(adapter.getContext().getResources().getString(R.string.no_trailsystem), NONE));
+        ParseQuery<Trailsystem> query = getQuery();
+        query.fromLocalDatastore();
+        query.findInBackground(new FindCallback<Trailsystem>() {
+            @Override
+            public void done(List<Trailsystem> list, ParseException e) {
+                if (e==null) {
+                    for (Trailsystem ts : list) {
+                        adapter.add(new ListItem(ts.Name(), ts.ID()));
+                    }
+                    adapter.add(new ListItem(adapter.getContext().getResources().getString(R.string.new_trailsystem),NEW));
+                }
+            }
+        });
+    }
+
+
 
 }

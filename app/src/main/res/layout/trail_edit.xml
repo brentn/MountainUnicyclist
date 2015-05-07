@@ -46,8 +46,7 @@
                 android:layout_toRightOf="@+id/title"
                 android:layout_alignParentTop="true"
                 android:layout_centerVertical="true"
-                android:layout_alignTop="@+id/location_picker_button"
-                android:layout_alignBottom="@+id/location_picker_button" />
+                android:layout_alignTop="@+id/location_picker_button" />
 
             <ImageButton
                 android:layout_width="wrap_content"

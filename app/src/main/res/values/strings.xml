@@ -48,4 +48,6 @@
     <string name="description_of_trail">Description of trail</string>
     <string name="directions_text">How to get there...</string>
     <string name="comment">Add Comment</string>
+    <string name="no_trailsystem">no trailsystem</string>
+    <string name="new_trailsystem">New Trailsystem</string>
 </resources>

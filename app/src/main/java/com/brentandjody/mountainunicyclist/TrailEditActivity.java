@@ -18,10 +18,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -30,14 +31,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 
 import com.brentandjody.mountainunicyclist.data.Difficulty;
 import com.brentandjody.mountainunicyclist.data.Flags;
+import com.brentandjody.mountainunicyclist.data.ListItem;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.PhotoPicker;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.brentandjody.mountainunicyclist.data.Trailsystem;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
@@ -69,7 +71,6 @@ public class TrailEditActivity extends ActionBarActivity {
     private Uri mOutputFileUri;
     private ImageView mSelectedPhoto;
     private PhotoPicker mPhotoPicker;
-    private float startY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +88,21 @@ public class TrailEditActivity extends ActionBarActivity {
         okButton = (Button) findViewById(R.id.ok_button);
         addPhotoButton = (ImageView) findViewById(R.id.add_photo_button);
         mPhotoPicker = new PhotoPicker(this, (LinearLayout)findViewById(R.id.photos));
-        ScrollView scrollView = (ScrollView) findViewById(R.id.scroll_view);
+        ArrayAdapter<ListItem> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
+        Trailsystem.LoadAll(adapter);
+        trailsystem.setAdapter(adapter);
+        trailsystem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String value = ((ListItem)trailsystem.getItemAtPosition(position)).Value();
+                if (value==Trailsystem.NEW) {
+                    //TODO: create and save new trailsystem.
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         Intent intent = getIntent();
         if (intent.hasExtra("trailId")) {
             Trail.Load(intent.getStringExtra("trailId"), LocationHelper.getGPS(this), new GetCallback<Trail>() {
@@ -132,6 +147,7 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail.setDescription(description.getText().toString());
             mTrail.setIsMuni(isMuni.isChecked());
             mTrail.setDirections(directions.getText().toString());
+            mTrail.setTrailsystem(((ListItem) trailsystem.getSelectedItem()).Value());
             //TODO:set trailsystem
             //TODO:set selected feature photoid
             mTrail.saveInBackground();
