@@ -50,4 +50,10 @@
     <string name="comment">Add Comment</string>
     <string name="no_trailsystem">no trailsystem</string>
     <string name="new_trailsystem">New Trailsystem</string>
+    <string name="title_activity_trailsystem">Trailsystem</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="directions_parking">Directions to parking lot</string>
+    <string name="save">Save</string>
+    <string name="trailsystem_name">Trailsystem Name</string>
 </resources>
