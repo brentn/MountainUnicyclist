@@ -27,12 +27,15 @@ import java.util.UUID;
  */
 @ParseClassName("Trailsystem")
 public class Trailsystem extends ParseObject {
-    private static final String NAME = "name";
-    private static final String DESCRIPTION = "description";
-    private static final String LAT = "latitude";
-    private static final String LNG = "longitude";
+    public static final String ID_EXTRA = "TRAILSYSTEM_ID";
     public static final String NONE = "NONE";
     public static final String NEW = "NEW";
+
+    private static final String NAME = "name";
+    private static final String DESCRIPTION = "description";
+    private static final String DIRECTIONS = "directions";
+    private static final String LAT = "latitude";
+    private static final String LNG = "longitude";
 
 
     public Trailsystem(){}
@@ -41,6 +44,7 @@ public class Trailsystem extends ParseObject {
 
     public void setTitle(String title) {put(NAME, title);}
     public void setDescription(String description) {put(DESCRIPTION, description);}
+    public void setDirections(String directions) {put(DIRECTIONS, directions);}
     public void setLocation(LatLng location) {
         put(LAT, location.latitude);
         put(LNG, location.longitude);
@@ -53,6 +57,7 @@ public class Trailsystem extends ParseObject {
     public String ID() {return getObjectId();}
     public String Name() {return getString(NAME);}
     public String Description() {return getString(DESCRIPTION);}
+    public String Directions() {return getString(DIRECTIONS);}
     public LatLng Location() {
         double lat = getDouble(LAT);
         double lng = getDouble(LNG);
@@ -73,6 +78,7 @@ public class Trailsystem extends ParseObject {
                         adapter.add(new ListItem(ts.Name(), ts.ID()));
                     }
                     adapter.add(new ListItem(adapter.getContext().getResources().getString(R.string.new_trailsystem),NEW));
+                    adapter.notifyDataSetChanged();
                 }
             }
         });

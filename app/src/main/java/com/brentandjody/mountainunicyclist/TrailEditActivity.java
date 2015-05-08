@@ -65,6 +65,7 @@ public class TrailEditActivity extends ActionBarActivity {
     private EditText directions;
     private CheckBox isMuni;
     private Spinner trailsystem;
+    private ArrayAdapter<ListItem> trailsystemAdapter;
     private ImageButton locationButton;
     private Button okButton;
     private ImageView addPhotoButton;
@@ -88,15 +89,16 @@ public class TrailEditActivity extends ActionBarActivity {
         okButton = (Button) findViewById(R.id.ok_button);
         addPhotoButton = (ImageView) findViewById(R.id.add_photo_button);
         mPhotoPicker = new PhotoPicker(this, (LinearLayout)findViewById(R.id.photos));
-        ArrayAdapter<ListItem> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
-        Trailsystem.LoadAll(adapter);
-        trailsystem.setAdapter(adapter);
+        trailsystemAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
+        Trailsystem.LoadAll(trailsystemAdapter);
+        trailsystem.setAdapter(trailsystemAdapter);
         trailsystem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String value = ((ListItem)trailsystem.getItemAtPosition(position)).Value();
                 if (value==Trailsystem.NEW) {
-                    //TODO: create and save new trailsystem.
+                    Intent intent = new Intent(TrailEditActivity.this, TrailsystemActivity.class);
+                    startActivityForResult(intent, Application.NEW_TRAILSYSTEM);
                 }
             }
             @Override
@@ -279,6 +281,20 @@ public class TrailEditActivity extends ActionBarActivity {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case Application.NEW_TRAILSYSTEM:
+                if (resultCode== RESULT_OK) {
+                    Trailsystem.LoadAll(trailsystemAdapter);
+                    if (data.hasExtra(Trailsystem.ID_EXTRA)) {
+                        String value = data.getStringExtra(Trailsystem.ID_EXTRA);
+                        trailsystem.setSelection(0);
+                        for (int i=0; i<trailsystemAdapter.getCount(); i++) {
+                            if ((trailsystemAdapter.getItem(i).Value().equals(value))) {
+                                trailsystem.setSelection(i);
+                            }
+                        }
+                    }
+                }
+                break;
             case Application.EDIT_TRAIL: {
                 if (resultCode == RESULT_OK) {
                     mTrail.setLocation((LatLng) data.getParcelableExtra("location"));

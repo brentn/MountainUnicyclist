@@ -22,6 +22,9 @@
         <item name="android:actionBarStyle">@style/PrimaryActionBar</item>
         <item name="actionBarStyle">@style/PrimaryActionBar</item>
     </style>
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+
+    </style>
 
 
     <!-- ActionBar styles -->

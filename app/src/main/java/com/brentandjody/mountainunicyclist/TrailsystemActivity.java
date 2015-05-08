@@ -2,16 +2,60 @@ package com.brentandjody.mountainunicyclist;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.brentandjody.mountainunicyclist.data.Trailsystem;
+import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseException;
+import com.parse.SaveCallback;
 
 
 public class TrailsystemActivity extends ActionBarActivity {
+
+    private LatLng mLocation = null;
+    private TextView title;
+    private TextView description;
+    private TextView directions;
+    private ImageView btnLocation;
+    private TextView btnSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trailsystem);
+        title = (TextView) findViewById(R.id.title);
+        description = (TextView) findViewById(R.id.description);
+        directions = (TextView) findViewById(R.id.directions);
+        btnLocation = (ImageView) findViewById(R.id.location_picker_button);
+        btnSave = (TextView) findViewById(R.id.btnSave);
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Trailsystem trailsystem = new Trailsystem();
+                trailsystem.setTitle(title.getText().toString());
+                trailsystem.setDescription(description.getText().toString());
+                trailsystem.setDirections(directions.getText().toString());
+                if (mLocation!=null)
+                    trailsystem.setLocation(mLocation);
+                trailsystem.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e==null) {
+                            TrailsystemActivity.this.getIntent().putExtra(Trailsystem.ID_EXTRA, trailsystem.ID());
+                            TrailsystemActivity.this.setResult(RESULT_OK);
+                            TrailsystemActivity.this.finish();
+                        } else Log.e("Trailsystem Save", e.getMessage());
+                    }
+                });
+            }
+        });
+        getSupportActionBar().hide();
     }
 
     @Override

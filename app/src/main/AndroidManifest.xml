@@ -62,7 +62,8 @@
             android:theme="@android:style/Theme.Translucent" />
         <activity
             android:name=".TrailsystemActivity"
-            android:label="@string/title_activity_trailsystem" >
+            android:label="@string/title_activity_trailsystem"
+            android:theme="@style/DialogTheme">
         </activity>
     </application>
 
