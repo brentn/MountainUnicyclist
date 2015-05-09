@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.brentandjody.mountainunicyclist.R;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseClassName;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -65,10 +66,23 @@ public class Trailsystem extends ParseObject {
     }
     public boolean isDeleted() { return Flags.isDeleted(getObjectId()); }
 
+    public static void LoadInto(String trailsystem_id, final TextView view) {
+        ParseQuery<Trailsystem> query = Trailsystem.getQuery();
+        query.fromLocalDatastore();
+        query.getInBackground(trailsystem_id, new GetCallback<Trailsystem>() {
+            @Override
+            public void done(Trailsystem trailsystem, ParseException e) {
+                if (e==null) {
+                    view.setText(trailsystem.Name());
+                }
+            }
+        });
+    }
+
     public static void LoadAll(final ArrayAdapter adapter) {
         adapter.clear();
         adapter.add(new ListItem(adapter.getContext().getResources().getString(R.string.no_trailsystem), NONE));
-        ParseQuery<Trailsystem> query = getQuery();
+        ParseQuery<Trailsystem> query = Trailsystem.getQuery();
         query.fromLocalDatastore();
         query.findInBackground(new FindCallback<Trailsystem>() {
             @Override

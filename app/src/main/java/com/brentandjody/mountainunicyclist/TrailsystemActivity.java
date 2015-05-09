@@ -1,5 +1,6 @@
 package com.brentandjody.mountainunicyclist;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,12 +44,15 @@ public class TrailsystemActivity extends ActionBarActivity {
                 trailsystem.setDirections(directions.getText().toString());
                 if (mLocation!=null)
                     trailsystem.setLocation(mLocation);
+                trailsystem.pinInBackground();
                 trailsystem.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e==null) {
-                            TrailsystemActivity.this.getIntent().putExtra(Trailsystem.ID_EXTRA, trailsystem.ID());
-                            TrailsystemActivity.this.setResult(RESULT_OK);
+                            Intent intent = TrailsystemActivity.this.getIntent();
+                            String id = trailsystem.ID();
+                            intent.putExtra(Trailsystem.ID_EXTRA, id);
+                            TrailsystemActivity.this.setResult(RESULT_OK, intent);
                             TrailsystemActivity.this.finish();
                         } else Log.e("Trailsystem Save", e.getMessage());
                     }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.brentandjody.mountainunicyclist.data.Trailsystem;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.DeleteCallback;
@@ -185,9 +186,7 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
                 Log.e("TrailAdapter", ex.getMessage());
             }
             holder.mDifficulty.setImageResource(trail.Difficulty().Icon());
-            String trailsystem = ""; //TODO:lookup trailsystem
-            holder.mTrailsystem.setText(trailsystem);
-
+            Trailsystem.LoadInto(trail.TrailsystemId(), holder.mTrailsystem);
             //calculated or processed values
             int rating = trail.Rating(); //TODO: this should take into consideration ride ratings
             holder.mRating.setText(trail.Stars());

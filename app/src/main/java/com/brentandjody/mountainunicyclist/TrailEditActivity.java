@@ -150,7 +150,6 @@ public class TrailEditActivity extends ActionBarActivity {
             mTrail.setIsMuni(isMuni.isChecked());
             mTrail.setDirections(directions.getText().toString());
             mTrail.setTrailsystem(((ListItem) trailsystem.getSelectedItem()).Value());
-            //TODO:set trailsystem
             //TODO:set selected feature photoid
             mTrail.saveInBackground();
             mTrail.notifyObservers();
@@ -286,6 +285,7 @@ public class TrailEditActivity extends ActionBarActivity {
                     Trailsystem.LoadAll(trailsystemAdapter);
                     if (data.hasExtra(Trailsystem.ID_EXTRA)) {
                         String value = data.getStringExtra(Trailsystem.ID_EXTRA);
+                        mTrail.setTrailsystem(value);
                         trailsystem.setSelection(0);
                         for (int i=0; i<trailsystemAdapter.getCount(); i++) {
                             if ((trailsystemAdapter.getItem(i).Value().equals(value))) {
