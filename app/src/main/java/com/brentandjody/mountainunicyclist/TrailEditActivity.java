@@ -90,7 +90,6 @@ public class TrailEditActivity extends ActionBarActivity {
         addPhotoButton = (ImageView) findViewById(R.id.add_photo_button);
         mPhotoPicker = new PhotoPicker(this, (LinearLayout)findViewById(R.id.photos));
         trailsystemAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item);
-        Trailsystem.LoadAll(trailsystemAdapter);
         trailsystem.setAdapter(trailsystemAdapter);
         trailsystem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -192,6 +191,7 @@ public class TrailEditActivity extends ActionBarActivity {
         rating.setRating(mTrail.Rating());
         description.setText(mTrail.Description());
         directions.setText(mTrail.Directions());
+        Trailsystem.LoadAll(trailsystem, mTrail.TrailsystemId());
         mPhotoPicker.setup(mTrail.ID());
         setupButtonListeners();
         setupTrailsystem();
@@ -282,9 +282,9 @@ public class TrailEditActivity extends ActionBarActivity {
         switch (requestCode) {
             case Application.NEW_TRAILSYSTEM:
                 if (resultCode== RESULT_OK) {
-                    Trailsystem.LoadAll(trailsystemAdapter);
                     if (data.hasExtra(Trailsystem.ID_EXTRA)) {
                         String value = data.getStringExtra(Trailsystem.ID_EXTRA);
+                        Trailsystem.LoadAll(trailsystem, value);
                         mTrail.setTrailsystem(value);
                         trailsystem.setSelection(0);
                         for (int i=0; i<trailsystemAdapter.getCount(); i++) {

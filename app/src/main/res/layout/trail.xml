@@ -78,6 +78,14 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/trailsystem"
+                    android:layout_gravity="right|center_vertical"
+                    android:paddingTop="10dp" />
+
             </FrameLayout>
 
             <FrameLayout
@@ -89,14 +97,6 @@
                 android:background="@color/translucent"
                 android:id="@+id/ratingbar"
                 android:elevation="1dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/trailsystem"
-                    android:layout_gravity="right|center_vertical"
-                    android:paddingTop="10dp" />
 
                 <TextView
                     android:layout_width="wrap_content"

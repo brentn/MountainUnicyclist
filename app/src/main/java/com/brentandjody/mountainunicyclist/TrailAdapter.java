@@ -128,7 +128,19 @@ public class TrailAdapter extends RecyclerView.Adapter<TrailAdapter.ViewHolder> 
                     } else Log.w("LoadFromParse", e.getMessage());
                 }
             });
-            ParseQuery<Photo> photo_query = Photo.getQuery();
+            ParseQuery<Trailsystem> ts_query = Trailsystem.getQuery();
+            ts_query.findInBackground(new FindCallback<Trailsystem>() {
+                @Override
+                public void done(List<Trailsystem> trailsystems, ParseException e) {
+                    if (e==null) {
+                        for (Trailsystem trailsystem : trailsystems) {
+                            trailsystem.pinInBackground();
+                        }
+                        Log.d("LoadFromParse", trailsystems.size() + " trailsystems downloaded from Parse.com");
+                    } else Log.w("LoadFromParse", e.getMessage());
+                }
+            });
+            ParseQuery < Photo > photo_query = Photo.getQuery();
             photo_query.findInBackground(new FindCallback<Photo>() {
                 @Override
                 public void done(List<Photo> photos, ParseException e) {

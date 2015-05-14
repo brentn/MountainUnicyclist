@@ -51,6 +51,14 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/trailsystem"
+            android:layout_gravity="right|center_vertical"
+            android:paddingTop="10dp" />
+
     </LinearLayout>
 
     <RelativeLayout
@@ -217,14 +225,6 @@
             android:id="@+id/ratingbar"
             android:background="@color/translucent"
             android:elevation="1dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:id="@+id/trailsystem"
-                android:layout_gravity="right|center_vertical"
-                android:paddingTop="10dp" />
 
             <TextView
                 android:layout_width="wrap_content"

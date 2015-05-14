@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.brentandjody.mountainunicyclist.data.Photo;
 import com.brentandjody.mountainunicyclist.data.PhotoPicker;
 import com.brentandjody.mountainunicyclist.data.Trail;
+import com.brentandjody.mountainunicyclist.data.Trailsystem;
 import com.brentandjody.mountainunicyclist.helpers.LocationHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.GetCallback;
@@ -115,7 +116,7 @@ public class TrailActivity extends ActionBarActivity {
             dTitle.setVisibility(View.VISIBLE);
         }
         directions.setText(mTrail.Directions());
-        //TODO:trailsystem
+        Trailsystem.LoadInto(mTrail.TrailsystemId(), trailsystem);
         photoPicker.setup(mTrail.ID());
         photoPicker.select(mTrail.PhotoId());
     }

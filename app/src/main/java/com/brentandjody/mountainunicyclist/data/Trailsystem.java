@@ -2,9 +2,11 @@ package com.brentandjody.mountainunicyclist.data;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import com.brentandjody.mountainunicyclist.R;
@@ -79,7 +81,8 @@ public class Trailsystem extends ParseObject {
         });
     }
 
-    public static void LoadAll(final ArrayAdapter adapter) {
+    public static void LoadAll(final Spinner spinner, final String trailsystem_id) {
+        final ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
         adapter.clear();
         adapter.add(new ListItem(adapter.getContext().getResources().getString(R.string.no_trailsystem), NONE));
         ParseQuery<Trailsystem> query = Trailsystem.getQuery();
@@ -89,11 +92,17 @@ public class Trailsystem extends ParseObject {
             public void done(List<Trailsystem> list, ParseException e) {
                 if (e==null) {
                     for (Trailsystem ts : list) {
-                        adapter.add(new ListItem(ts.Name(), ts.ID()));
+                        ListItem item = new ListItem(ts.Name(), ts.ID());
+                        adapter.add(item);
+                        if (ts.ID()==trailsystem_id) {
+                            Log.d("LoadAllTrailsystems", "Setting selected value");
+                            spinner.setSelection(adapter.getPosition(item));
+                        }
+                        Log.d("LoadAllTrailsystems", "succeeded loading "+ list.size() + " trailsystems");
                     }
                     adapter.add(new ListItem(adapter.getContext().getResources().getString(R.string.new_trailsystem),NEW));
                     adapter.notifyDataSetChanged();
-                }
+                } else Log.w("LoadAllTrailsystems", e.getMessage());
             }
         });
     }
