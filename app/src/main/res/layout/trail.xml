@@ -84,7 +84,8 @@
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:id="@+id/trailsystem"
                     android:layout_gravity="right|center_vertical"
-                    android:paddingTop="10dp" />
+                    android:paddingRight="12dp"
+                    android:gravity="right" />
 
             </FrameLayout>
 

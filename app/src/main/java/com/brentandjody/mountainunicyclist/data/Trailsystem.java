@@ -94,7 +94,7 @@ public class Trailsystem extends ParseObject {
                     for (Trailsystem ts : list) {
                         ListItem item = new ListItem(ts.Name(), ts.ID());
                         adapter.add(item);
-                        if (ts.ID()==trailsystem_id) {
+                        if (ts.ID().equals(trailsystem_id)) {
                             Log.d("LoadAllTrailsystems", "Setting selected value");
                             spinner.setSelection(adapter.getPosition(item));
                         }

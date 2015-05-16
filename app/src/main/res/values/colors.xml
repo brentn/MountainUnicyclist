@@ -11,7 +11,7 @@
     <color name="background">#CCCCCC</color>
     <color name="ripple">#888888</color>
     <color name="card_background">#FFFFFF</color>
-    <color name="translucent">#99EEEEEE</color>
+    <color name="translucent">#99DDDDDD</color>
     <color name="icons">#212121</color>
     <color name="divider">#B6B6B6</color>
 </resources>

@@ -15,7 +15,8 @@
         android:background="@color/primary"
         android:id="@+id/titlebar"
         android:layout_gravity="top|center_horizontal"
-        android:paddingBottom="4dp">
+        android:paddingBottom="4dp"
+        android:orientation="horizontal">
 
         <ImageButton
             android:layout_width="48dp"
@@ -28,7 +29,7 @@
 
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/titletext"
@@ -52,12 +53,13 @@
         </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/trailsystem"
             android:layout_gravity="right|center_vertical"
-            android:paddingTop="10dp" />
+            android:paddingRight="12dp"
+            android:gravity="right" />
 
     </LinearLayout>
 

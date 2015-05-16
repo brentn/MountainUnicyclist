@@ -51,7 +51,7 @@
         <activity
             android:name=".TrailActivity"
             android:label="@string/title_activity_trail"
-            android:parentActivityName=".MainActivity" >
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.brentandjody.mountainunicyclist.MainActivity" />
