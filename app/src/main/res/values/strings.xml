@@ -42,7 +42,7 @@
     <string name="delete">Delete</string>
     <string name="identify_trailhead">Identify the TrailHead</string>
     <string name="location_picker_instructions">Medium Text</string>
-    <string name="offroad">check if offroad</string>
+    <string name="offroad">Is this an "offroad" trail?</string>
     <string name="muni">MUni trail</string>
     <string name="directions">Directions</string>
     <string name="description_of_trail">Description of trail</string>

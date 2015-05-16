@@ -123,7 +123,7 @@
                 android:paddingTop="12dp"
                 android:autoText="true"
                 android:background="@color/translucent"
-                android:layout_below="@+id/description" />
+                android:layout_below="@+id/isMuni" />
 
             <RadioGroup
                 android:layout_width="wrap_content"
@@ -197,27 +197,12 @@
 
             </RadioGroup>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="MUni trail"
-                android:id="@+id/textView13"
-                android:textColor="@color/secondary_text"
-                android:paddingLeft="8dp"
-                android:paddingTop="12dp"
-                android:autoText="true"
-                android:background="@color/translucent"
-                android:layout_alignTop="@+id/textView"
-                android:layout_toRightOf="@+id/difficulty" />
-
             <CheckBox
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/offroad"
                 android:id="@+id/isMuni"
-                android:layout_below="@+id/textView13"
-                android:layout_toRightOf="@+id/difficulty" />
+                android:layout_below="@+id/description" />
 
             <TextView
                 android:layout_width="match_parent"
